@@ -21,7 +21,7 @@
       "url": "https://anaconda.com/api/mcp"
     },
     "companion-smoke-test": {
-      "type": "local",
+      "type": "glob",
       "command": [
         "npx",
         "-y",
@@ -29,7 +29,7 @@
       ]
     },
     "context7": {
-      "type": "local",
+      "type": "glob",
       "command": [
         "npx",
         "-y",
