@@ -1,0 +1,79 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "model": "thinkingmachines/inkling:free",
+  "small_model": "xingchen-agi/xing4.0-29b-a4b:free",
+  "default_agent": "code",
+  "provider": {
+    "openrouter": {
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1"
+      }
+    },
+    "lm_studio": {
+      "options": {
+        "baseURL": "http://localhost:1234/v1"
+      }
+    }
+  },
+  "mcp": {
+    "anaconda": {
+      "type": "remote",
+      "url": "https://anaconda.com/api/mcp"
+    },
+    "companion-smoke-test": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-everything"
+      ]
+    },
+    "context7": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "environment": {
+        "DEFAULT_MINIMUM_TOKENS": "{{DEFAULT_MINIMUM_TOKENS}}"
+      }
+    }
+  },
+  "permission": {
+    "bash": "allow",
+    "edit": "allow",
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "task": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "semantic_search": "allow",
+    "kilo_memory_save": "allow",
+    "kilo_memory_recall": "allow",
+    "lsp": "allow",
+    "skill": "allow",
+    "external_directory": "ask",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "question": "allow"
+  },
+  "skills": {
+    "paths": [
+      ".kilo/skills",
+      "~/.config/kilo/skills"
+    ]
+  },
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+  "snapshot": true,
+  "share": "manual",
+  "autoupdate": "notify"
+}

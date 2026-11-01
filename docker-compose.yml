@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  cpu-dev:
+    build:
+      context: .
+      target: cpu-dev
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: bash
+
+  gpu-dev:
+    build:
+      context: .
+      target: gpu-dev
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: bash
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  dashboard:
+    build:
+      context: .
+      target: cpu-dev
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    ports:
+      - "8501:8501"
+    command: streamlit run dashboard/app.py --server.address=0.0.0.0

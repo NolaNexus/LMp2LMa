@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-10-31T18:27:19.709685",
+  "overall_status": "FAILED",
+  "gates": [
+    {
+      "gate_name": "Performance",
+      "status": "GateStatus.WARNING",
+      "message": "Performance near threshold: accuracy: 0.8700 near threshold 0.8, auc: 0.9200 near threshold 0.85",
+      "details": {
+        "metrics": {
+          "accuracy": 0.87,
+          "auc": 0.92,
+          "f1": 0.84
+        },
+        "thresholds": {
+          "accuracy": 0.8,
+          "auc": 0.85,
+          "f1": 0.75
+        },
+        "warnings": [
+          "accuracy: 0.8700 near threshold 0.8",
+          "auc: 0.9200 near threshold 0.85"
+        ]
+      },
+      "timestamp": "2026-10-31T18:27:19.709366"
+    },
+    {
+      "gate_name": "Data Drift",
+      "status": "GateStatus.PASSED",
+      "message": "Data drift share 15.00% within acceptable range",
+      "details": {
+        "drift_share": 0.15,
+        "threshold": 0.3
+      },
+      "timestamp": "2026-10-31T18:27:19.709614"
+    }
+  ]
+}

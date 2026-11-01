@@ -1,0 +1,18 @@
+// ML Pipeline
+digraph {
+	rankdir=LR size="8,5"
+	node [fontname=Arial shape=box style=filled]
+	A [label="prepare_data
+(test_size, random_state)" fillcolor=lightblue]
+	B [label="train_model
+(n_estimators, max_depth)" fillcolor=lightgreen]
+	C [label="evaluate_model
+(accuracy_threshold)" fillcolor=lightyellow]
+	D [label="register_model
+(model_name)" fillcolor=lightpink]
+	A -> B [label=train_data]
+	A -> C [label=test_data]
+	B -> C [label=model]
+	B -> D [label=model]
+	C -> D [label=metrics]
+}

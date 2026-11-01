@@ -1,0 +1,20 @@
+{
+  "track": "Track 3: ML Engineer",
+  "module": "MLOps",
+  "checkpoints": [
+    {"id": "cp1_ensemble", "notebook": "01_ensemble_modeling.ipynb", "skills": ["Voting", "Stacking", "XGBoost/LightGBM/CatBoost", "MLflow comparison"], "questions": [{"id": "q1", "type": "metric", "prompt": "Best model CV score?", "expected": "float"}, {"id": "q2", "type": "concept", "prompt": "Stacking vs voting?", "expected": "Stacking learns meta-learner; voting averages"}]},
+    {"id": "cp2_feature_store", "notebook": "02_feature_store.ipynb", "skills": ["Feast", "Feature registry", "Online/offline store", "Materialization"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Online retrieval latency (ms)?", "expected": "int < 10"}, {"id": "q2", "type": "concept", "prompt": "Online vs offline store?", "expected": "Online: low-latency serving; Offline: batch training"}]},
+    {"id": "cp3_mlflow_advanced", "notebook": "03_mlflow_advanced.ipynb", "skills": ["MLflow Projects", "Model registry", "Comparison", "Autolog"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Registered model version?", "expected": "int"}, {"id": "q2", "type": "concept", "prompt": "MLflow Project vs run?", "expected": "Project: reproducible entry point; Run: single execution"}]},
+    {"id": "cp4_kubeflow", "notebook": "04_kubeflow_pipeline.ipynb", "skills": ["KFP v2", "Components", "Pipeline", "DAG", "Local execution"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Pipeline compiled to YAML?", "expected": "True"}, {"id": "q2", "type": "concept", "prompt": "Component vs pipeline?", "expected": "Component: single step; Pipeline: DAG of components"}]},
+    {"id": "cp5_serving", "notebook": "05_model_serving.ipynb", "skills": ["BentoML", "FastAPI", "/predict endpoint", "HTTP serving"], "questions": [{"id": "q1", "type": "metric", "prompt": "P95 latency (ms)?", "expected": "int < 100"}, {"id": "q2", "type": "concept", "prompt": "BentoML vs raw FastAPI?", "expected": "BentoML: model packaging, versioning, multi-framework"}]},
+    {"id": "cp6_drift", "notebook": "06_drift_monitoring.ipynb", "skills": ["Evidently AI", "Data drift", "Target drift", "Prediction drift", "Alerting"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Drift detected (True/False)?", "expected": "bool"}, {"id": "q2", "type": "concept", "prompt": "Data vs concept drift?", "expected": "Data: P(X) changes; Concept: P(Y|X) changes"}]},
+    {"id": "cp7_cicd", "notebook": "07_ci_cd_ml.ipynb", "skills": ["GitHub Actions", "Validation gates", "Artifact publishing", "Model promotion"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Workflow passes?", "expected": "True"}, {"id": "q2", "type": "concept", "prompt": "Validation gate example?", "expected": "Min accuracy, max drift, schema check"}]},
+    {"id": "cp8_governance", "notebook": "08_governance.ipynb", "skills": ["Model cards", "Audit logs", "Compliance", "Validation gates"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Model card generated?", "expected": "True"}, {"id": "q2", "type": "concept", "prompt": "Model card sections?", "expected": "Intended use, metrics, limitations, ethical considerations"}]}
+  ],
+  "final_exam": {
+    "questions": 25,
+    "time_minutes": 60,
+    "passing_score": 0.75,
+    "topics": ["Ensembles", "Feature stores", "MLflow", "Kubeflow", "Serving", "Drift", "CI/CD", "Governance"]
+  }
+}

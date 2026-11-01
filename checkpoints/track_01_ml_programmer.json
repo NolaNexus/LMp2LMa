@@ -1,0 +1,75 @@
+{
+  "track": "Track 1: ML Programmer",
+  "module": "Foundations",
+  "checkpoints": [
+    {
+      "id": "cp1_data_preprocessing",
+      "notebook": "01_data_preprocessing.ipynb",
+      "skills": ["Data pipelines", "Great Expectations validation", "joblib serialization"],
+      "questions": [
+        {"id": "q1", "type": "code_output", "prompt": "What is the shape of the processed training data?", "expected": "tuple"},
+        {"id": "q2", "type": "concept", "prompt": "Why use Great Expectations for data validation?", "expected": "Automated data quality checks, schema validation, profiling"}
+      ]
+    },
+    {
+      "id": "cp2_experiment_tracking",
+      "notebook": "02_experiment_tracking.ipynb",
+      "skills": ["MLflow tracking", "Model registry", "GridSearchCV integration"],
+      "questions": [
+        {"id": "q1", "type": "code_output", "prompt": "How many experiments were logged?", "expected": "int > 0"},
+        {"id": "q2", "type": "concept", "prompt": "Difference between MLflow run and model registry?", "expected": "Run = experiment execution; Registry = versioned model storage with stages"}
+      ]
+    },
+    {
+      "id": "cp3_model_evaluation",
+      "notebook": "03_model_evaluation.ipynb",
+      "skills": ["Cross-validation", "Learning curves", "Calibration", "Fairness metrics"],
+      "questions": [
+        {"id": "q1", "type": "metric", "prompt": "What is the CV ROC-AUC mean?", "expected": "float 0-1"},
+        {"id": "q2", "type": "concept", "prompt": "When is calibration important?", "expected": "When predicted probabilities drive decisions (risk, ranking)"}
+      ]
+    },
+    {
+      "id": "cp4_math_foundations",
+      "notebook": "04_mathematical_foundations.ipynb",
+      "skills": ["Linear Algebra (SVD, PCA)", "Probability (CLT, Bayes)", "Gradient Descent", "MLE/MAP"],
+      "questions": [
+        {"id": "q1", "type": "code_output", "prompt": "SVD reconstruction error (Frobenius norm)?", "expected": "float ~0"},
+        {"id": "q2", "type": "concept", "prompt": "Why does gradient descent converge?", "expected": "Convex loss + appropriate LR + gradient Lipschitz"}
+      ]
+    },
+    {
+      "id": "cp5_computational_theory",
+      "notebook": "05_computational_theory.ipynb",
+      "skills": ["DFA/NFA", "Turing machines", "P vs NP", "SAT solving", "CFG (CYK)"],
+      "questions": [
+        {"id": "q1", "type": "code_output", "prompt": "SAT solver result for sample formula?", "expected": "SAT/UNSAT"},
+        {"id": "q2", "type": "concept", "prompt": "Why is P vs NP important for ML?", "expected": "Training = optimization; inference = verification; hardness bounds"}
+      ]
+    },
+    {
+      "id": "cp6_bayesian_methods",
+      "notebook": "06_bayesian_methods.ipynb",
+      "skills": ["Bayes theorem", "MLE/MAP", "PyMC3 MCMC", "Uncertainty quantification"],
+      "questions": [
+        {"id": "q1", "type": "code_output", "prompt": "Posterior mean for coin bias?", "expected": "float 0-1"},
+        {"id": "q2", "type": "concept", "prompt": "MAP vs MLE difference?", "expected": "MAP includes prior; MLE maximizes likelihood only"}
+      ]
+    },
+    {
+      "id": "cp7_reinforcement_learning",
+      "notebook": "07_reinforcement_learning.ipynb",
+      "skills": ["MDP", "Q-learning", "Epsilon-greedy", "Grid World", "Gym"],
+      "questions": [
+        {"id": "q1", "type": "code_output", "prompt": "Average reward after convergence?", "expected": "float"},
+        {"id": "q2", "type": "concept", "prompt": "Exploration vs exploitation tradeoff?", "expected": "Epsilon-greedy balances; decay epsilon over time"}
+      ]
+    }
+  ],
+  "final_exam": {
+    "questions": 25,
+    "time_minutes": 60,
+    "passing_score": 0.75,
+    "topics": ["Data pipelines", "Experiment tracking", "Model evaluation", "Math foundations", "Computational theory", "Bayesian methods", "RL"]
+  }
+}

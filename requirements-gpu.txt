@@ -1,0 +1,18 @@
+# ML Architect Journey - GPU Requirements
+# Install: pip install -r requirements-gpu.txt
+# Requires CUDA 11.8+ or 12.1+
+
+# Core (from base)
+-r requirements.txt
+
+# GPU-specific
+torch>=2.0.0+cu118
+torchvision>=0.15.0+cu118
+torchaudio>=2.0.0+cu118
+deepspeed>=0.12.0
+bitsandbytes>=0.41.0
+faiss-gpu>=1.7.4
+tritonclient[all]>=2.38.0
+
+# Flash Attention (optional, for transformers)
+# flash-attn>=2.3.0

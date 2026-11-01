@@ -1,0 +1,55 @@
+name: ML CD Pipeline
+'on':
+  workflow_run:
+    workflows:
+    - ML CI Pipeline
+    types:
+    - completed
+    branches:
+    - main
+  workflow_dispatch: {}
+jobs:
+  deploy-staging:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download model artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: model
+        path: models/
+    - name: Build Docker image
+      run: docker build -t ${{ github.repository }}:staging-${{ github.sha }} . &&
+        docker tag ${{ github.repository }}:staging-${{ github.sha }} ${{ github.repository
+        }}:staging-latest
+    - name: Push to registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push image
+      run: docker push ${{ github.repository }}:staging-${{ github.sha }} && docker
+        push ${{ github.repository }}:staging-latest
+    - name: Smoke tests
+      run: echo 'Smoke tests against https://staging-api.example.com/health'
+  deploy-production:
+    needs: deploy-staging
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Manual approval
+      uses: trstringer/manual-approval@v1
+      with:
+        secret: ${{ github.token }}
+        approvers: ml-leads
+        minimum-approvals: 1
+        issue-title: Production Deployment Approval
+        issue-body: Deploy ${{ github.repository }}:staging-latest to production?
+    - name: Deploy to production
+      run: echo 'Deploy to production (configure kubectl)'
+    - name: Post-deploy validation
+      run: echo 'Run production validation'

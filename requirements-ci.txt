@@ -1,0 +1,11 @@
+# CI/CD Minimal Requirements (for GitHub Actions)
+pytest>=7.4.0
+nbval>=0.9.6
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+torch>=2.0.0+cpu
+torchvision>=0.15.0+cpu
+mlflow>=2.8.0
+evidently>=0.4.0
+feast>=0.30.0

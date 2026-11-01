@@ -1,0 +1,23 @@
+{
+  "track": "Track 2: DL Programmer",
+  "module": "Specialization",
+  "checkpoints": [
+    {"id": "cp1_nn_fundamentals", "notebook": "01_nn_fundamentals.ipynb", "skills": ["Perceptrons", "Backprop", "Activation functions", "Initialization"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Gradient check passes?", "expected": "True"}, {"id": "q2", "type": "concept", "prompt": "Why Xavier initialization?", "expected": "Preserves variance across layers"}]},
+    {"id": "cp2_cnn_vision", "notebook": "02_cnn_vision.ipynb", "skills": ["Convolutions", "Pooling", "ResNet", "Transfer learning"], "questions": [{"id": "q1", "type": "metric", "prompt": "Test accuracy on CIFAR-10?", "expected": "float > 0.8"}, {"id": "q2", "type": "concept", "prompt": "Why residual connections?", "expected": "Gradient flow in deep networks"}]},
+    {"id": "cp3_rnn_seq", "notebook": "03_rnn_seq.ipynb", "skills": ["RNN/LSTM/GRU", "Sequence modeling", "Attention"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Perplexity on validation?", "expected": "float"}, {"id": "q2", "type": "concept", "prompt": "LSTM vs GRU?", "expected": "LSTM: 3 gates, more params; GRU: 2 gates, faster"}]},
+    {"id": "cp4_transformers", "notebook": "04_transformers.ipynb", "skills": ["Self-attention", "Multi-head", "BERT", "Positional encoding"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Attention entropy (uniformity)?", "expected": "float"}, {"id": "q2", "type": "concept", "prompt": "Why multi-head attention?", "expected": "Different representation subspaces"}]},
+    {"id": "cp5_generative", "notebook": "05_generative.ipynb", "skills": ["VAE", "ELBO", "GAN", "Diffusion"], "questions": [{"id": "q1", "type": "metric", "prompt": "FID score?", "expected": "float < 50"}, {"id": "q2", "type": "concept", "prompt": "VAE vs GAN training stability?", "expected": "VAE stable (ELBO); GAN unstable (minimax)"}]},
+    {"id": "cp6_self_supervised", "notebook": "06_self_supervised.ipynb", "skills": ["SimCLR", "BYOL", "MAE", "Contrastive learning"], "questions": [{"id": "q1", "type": "metric", "prompt": "Linear probe accuracy?", "expected": "float > 0.7"}, {"id": "q2", "type": "concept", "prompt": "BYOL vs SimCLR?", "expected": "BYOL: no negatives, momentum encoder"}]},
+    {"id": "cp7_nlp_finetune", "notebook": "07_nlp_finetune.ipynb", "skills": ["QLoRA", "PEFT", "4-bit quantization", "Instruction tuning"], "questions": [{"id": "q1", "type": "code_output", "prompt": "Trainable params %?", "expected": "float < 1%"}, {"id": "q2", "type": "concept", "prompt": "Why 4-bit + LoRA?", "expected": "Memory efficiency + adapter training"}]},
+    {"id": "cp8_gnn", "notebook": "08_gnn.ipynb", "skills": ["Message passing", "GCN/GAT", "Graph classification", "PyG"], "questions": [{"id": "q1", "type": "metric", "prompt": "Test accuracy on Cora?", "expected": "float > 0.75"}, {"id": "q2", "type": "concept", "prompt": "Over-smoothing in deep GNNs?", "expected": "Node embeddings converge; residual + normalization helps"}]},
+    {"id": "cp9_time_series", "notebook": "09_time_series.ipynb", "skills": ["NeuralForecast", "Prophet", "Hierarchical", "MinTrace"], "questions": [{"id": "q1", "type": "metric", "prompt": "Best MAE (Prophet vs N-HiTS)?", "expected": "float"}, {"id": "q2", "type": "concept", "prompt": "Why reconcile hierarchical forecasts?", "expected": "Coherence: sum of parts = whole"}]},
+    {"id": "cp10_recommenders", "notebook": "10_recommender_systems.ipynb", "skills": ["Two-tower", "TFRS", "Faiss ANN", "BPR", "Cold start"], "questions": [{"id": "q1", "type": "metric", "prompt": "Recall@10?", "expected": "float > 0.1"}, {"id": "q2", "type": "concept", "prompt": "Retrieval vs ranking stage?", "expected": "Retrieval: 10M->100; Ranking: 100->10 precise"}]},
+    {"id": "cp11_science_healthcare", "notebook": "11_science_healthcare.ipynb", "skills": ["Uncertainty quantification", "Domain adaptation", "Calibration", "Clinical trials"], "questions": [{"id": "q1", "type": "metric", "prompt": "ECE (Expected Calibration Error)?", "expected": "float < 0.05"}, {"id": "q2", "type": "concept", "prompt": "Why domain adaptation in healthcare?", "expected": "Distribution shift: train (hospital A) != test (hospital B)"}]}
+  ],
+  "final_exam": {
+    "questions": 30,
+    "time_minutes": 90,
+    "passing_score": 0.7,
+    "topics": ["NN fundamentals", "CNN/RNN/Transformer", "Generative", "Self-supervised", "NLP fine-tune", "GNN", "Time series", "Recommenders", "Science/Healthcare"]
+  }
+}
