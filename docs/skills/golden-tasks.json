@@ -1,0 +1,92 @@
+{
+  "_comment": "Golden task set for the Phase 5 A/B (docs/adr/ADR-002, ADR-003). Each task runs twice: once with .opencode/skills present, once without. `skills` lists the skills that should help; [] marks a control where no skill should fire. Checks are mechanical: every `cmd` and `python` entry must exit 0, and every `expect_contains` substring must appear in the agent's text output.",
+  "tasks": [
+    {
+      "id": "gt-01",
+      "skills": ["repo-orientation"],
+      "prompt": "In this repository, which directories hold the course notebooks, how many notebooks does each hold, and what single command proves the notebooks are structurally valid? Answer briefly. Do not modify any files.",
+      "expect_contains": ["tools/validate_notebooks.py"],
+      "check": [{ "cmd": "python3 tools/validate_notebooks.py" }]
+    },
+    {
+      "id": "gt-02",
+      "skills": ["notebook-editing"],
+      "prompt": "The notebook track-02-dl-programmer/03_rnn_seq.ipynb has a code cell with a syntax error introduced by a bad hand edit. Repair that cell so the notebook is valid again. Do not delete the cell and do not change any other notebook.",
+      "setup": [
+        {
+          "python": "import json,pathlib\np=pathlib.Path('track-02-dl-programmer/03_rnn_seq.ipynb')\nnb=json.loads(p.read_text())\nfor c in nb['cells']:\n    if c['cell_type']=='code':\n        c['source']=['def broken(:\\n','    return 1\\n']\n        break\np.write_text(json.dumps(nb,indent=1)+'\\n')"
+        }
+      ],
+      "check": [
+        { "cmd": "python3 tools/validate_notebooks.py" },
+        { "cmd": "python3 -m pytest tests/test_notebooks.py -q" }
+      ]
+    },
+    {
+      "id": "gt-03",
+      "skills": ["retrieval-mcp"],
+      "prompt": "Find where this repository's retrieval index splits large files into chunks, and report the chunk size limit in characters and the overlap in characters. Answer in one line.",
+      "expect_contains": ["1500", "200"]
+    },
+    {
+      "id": "gt-04",
+      "skills": ["notebook-editing"],
+      "prompt": "A hand edit left notebook-only keys on a markdown cell in track-02-dl-programmer/03_rnn_seq.ipynb. Normalize the notebooks so they are clean nbformat 4.5, and make sure running the normalizer again would change nothing.",
+      "setup": [
+        {
+          "python": "import json,pathlib\np=pathlib.Path('track-02-dl-programmer/03_rnn_seq.ipynb')\nnb=json.loads(p.read_text())\nfor c in nb['cells']:\n    if c['cell_type']=='markdown':\n        c['execution_count']=3\n        c['outputs']=[]\n        break\np.write_text(json.dumps(nb,indent=1)+'\\n')"
+        }
+      ],
+      "check": [
+        { "cmd": "python3 tools/validate_notebooks.py" },
+        {
+          "python": "import json,pathlib\nnb=json.loads(pathlib.Path('track-02-dl-programmer/03_rnn_seq.ipynb').read_text())\nbad=[c for c in nb['cells'] if c['cell_type']=='markdown' and ('execution_count' in c or 'outputs' in c)]\nassert not bad, f'markdown cells still carry notebook-only keys: {len(bad)}'"
+        }
+      ]
+    },
+    {
+      "id": "gt-05",
+      "skills": ["authoring-skills"],
+      "prompt": "Add a skill to this repository that covers editing the Streamlit dashboard in dashboard/app.py, so that dashboard work triggers it. Follow the repository's own process for authoring a skill and prove it passes the repository's lint.",
+      "check": [
+        { "cmd": "test -f .opencode/skills/dashboard-editing/SKILL.md" },
+        { "cmd": "tools/skills-lint.sh" }
+      ]
+    },
+    {
+      "id": "gt-06",
+      "skills": ["authoring-skills"],
+      "prompt": "Retire the retrieval-mcp skill following this repository's documented process. Leave the tree consistent and verify with the repository's own tooling.",
+      "check": [
+        { "cmd": "test -f .opencode/skills/.archive/retrieval-mcp/SKILL.md" },
+        { "cmd": "test ! -e .opencode/skills/retrieval-mcp" },
+        { "cmd": "grep -q 'status: archived' .opencode/skills/.archive/retrieval-mcp/SKILL.md" },
+        { "cmd": "tools/skills-lint.sh" }
+      ]
+    },
+    {
+      "id": "gt-07",
+      "skills": ["repo-orientation"],
+      "prompt": "Where does the notebook execution sweep write its report file, and what does the retrieval service status command report right now? Answer briefly. Do not modify any files.",
+      "expect_contains": ["artifacts/execution_report.md"]
+    },
+    {
+      "id": "gt-08",
+      "skills": ["retrieval-mcp"],
+      "prompt": "Which notebook in track-03-ml-engineer covers model drift monitoring, and which library does it use to build the drift report? Answer in two sentences.",
+      "expect_contains": ["06_drift_monitoring.ipynb", "evidently"]
+    },
+    {
+      "id": "gt-09",
+      "skills": [],
+      "prompt": "Count the Python files directly under tools/ and list their names. Answer only. Do not modify any files.",
+      "expect_contains": ["skills_lint.py", "validate_notebooks.py"]
+    },
+    {
+      "id": "gt-10",
+      "skills": [],
+      "prompt": "What Python version does pyproject.toml require, and which build backend does it declare? Answer only. Do not modify any files.",
+      "expect_contains": ["3.10", "setuptools"]
+    }
+  ]
+}
