@@ -5,7 +5,7 @@ track-*/data/
 __pycache__/
 .pytest_cache/
 .venv/
-mlruns/
+**/mlruns/
 *.bak
 *.ipynb.bak
 *.ipynb_checkpoints/
