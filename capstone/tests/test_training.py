@@ -1,5 +1,4 @@
 import json
-import tempfile
 from pathlib import Path
 
 from capstone.training.train import train

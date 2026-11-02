@@ -4,11 +4,12 @@ Trains a TF-IDF + LogisticRegression model over the FAQ corpus, logs the run
 to MLflow, and writes run metadata (model URI, metrics, timestamp) to
 ``last_run.json`` for retraining-trigger evaluation and monitoring.
 """
+
 from __future__ import annotations
 
 import json
 import tempfile
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional

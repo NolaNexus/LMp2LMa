@@ -6,6 +6,7 @@ Status semantics:
   NOT_EXECUTED  one or more checkpoints could not be graded because the notebook
                 has no stored outputs (run the notebook first)
 """
+
 import argparse
 import json
 import os
@@ -118,7 +119,12 @@ def grade_track(track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_D
     """Grade a track by comparing checkpoint expectations to notebook outputs."""
     checkpoint_file = os.path.join(checkpoint_dir, f"{track_id}.json")
     if not os.path.exists(checkpoint_file):
-        return {"track": track_id, "error": "Checkpoint file not found", "score": 0, "status": "ERROR"}
+        return {
+            "track": track_id,
+            "error": "Checkpoint file not found",
+            "score": 0,
+            "status": "ERROR",
+        }
 
     with open(checkpoint_file, encoding="utf-8") as f:
         data = json.load(f)
@@ -177,7 +183,9 @@ def grade_track(track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_D
 
     results["final_exam"] = final_exam
     results["percentage"] = (
-        round(results["total_score"] / results["max_score"] * 100, 1) if results["max_score"] > 0 else 0.0
+        round(results["total_score"] / results["max_score"] * 100, 1)
+        if results["max_score"] > 0
+        else 0.0
     )
 
     if results["notebooks_missing_outputs"]:
@@ -206,7 +214,9 @@ def main(argv=None):
     )
     args = parser.parse_args(argv)
 
-    result = grade_track(args.track, notebook_dir=args.notebook_dir, checkpoint_dir=args.checkpoint_dir)
+    result = grade_track(
+        args.track, notebook_dir=args.notebook_dir, checkpoint_dir=args.checkpoint_dir
+    )
 
     if args.json:
         print(json.dumps(result, indent=2))

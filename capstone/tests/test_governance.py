@@ -1,5 +1,4 @@
 """Tests for deterministic PII redaction."""
-import pytest
 
 from capstone.governance.pii import redact, redact_text
 

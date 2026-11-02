@@ -8,6 +8,7 @@
 
 Safe to re-run: already-normalized notebooks are rewritten identically.
 """
+
 import json
 import sys
 import uuid

@@ -4,6 +4,7 @@
 3. ast.parse on every code cell (magic/! lines stripped)
 Exit non-zero on any failure with file:cell_index:lineno reporting.
 """
+
 import ast
 import json
 import sys

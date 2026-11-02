@@ -1,4 +1,5 @@
 """Plugin interfaces for the capstone modular monolith (ADR-001)."""
+
 from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
@@ -12,8 +13,7 @@ class RetrievalPlugin(Protocol):
 
     name: str
 
-    def retrieve(self, query: str, top_k: int = 3) -> list[RetrievedDocument]:
-        ...
+    def retrieve(self, query: str, top_k: int = 3) -> list[RetrievedDocument]: ...
 
 
 class FaqRetrievalPlugin:

@@ -1,4 +1,5 @@
 """Smoke test for the Streamlit progress dashboard using streamlit.testing."""
+
 from pathlib import Path
 
 import pytest

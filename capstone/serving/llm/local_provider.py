@@ -1,14 +1,23 @@
 """
 Local Model Provider (Ollama / vLLM compatible)
 """
+
+import asyncio
+import json
 import os
 import time
-import json
-from typing import List, Dict, Any, AsyncIterator
+from typing import AsyncIterator, List
+
 import httpx
+
 from capstone.serving.llm.providers import (
-    LLMProvider, ProviderType, LLMRequest, LLMResponse,
-    EmbeddingRequest, EmbeddingResponse, registry
+    EmbeddingRequest,
+    EmbeddingResponse,
+    LLMProvider,
+    LLMRequest,
+    LLMResponse,
+    ProviderType,
+    registry,
 )
 
 
@@ -20,7 +29,7 @@ class LocalProvider(LLMProvider):
         base_url: str = "http://localhost:11434",  # Ollama default
         model: str = "llama3",
         embedding_model: str = "nomic-embed-text",
-        timeout: float = 60.0
+        timeout: float = 60.0,
     ):
         self.base_url = base_url.rstrip("/")
         self.default_model = model
@@ -79,7 +88,7 @@ class LocalProvider(LLMProvider):
             tokens_used=data.get("usage", {}).get("total_tokens", 0),
             latency_ms=latency_ms,
             finish_reason=choice.get("finish_reason", "stop"),
-            metadata=data.get("usage", {})
+            metadata=data.get("usage", {}),
         )
 
     async def generate_stream(self, request: LLMRequest) -> AsyncIterator[str]:
@@ -99,7 +108,9 @@ class LocalProvider(LLMProvider):
         if request.stop_sequences:
             payload["stop"] = request.stop_sequences
 
-        async with self.client.stream("POST", f"{self.base_url}/v1/chat/completions", json=payload) as response:
+        async with self.client.stream(
+            "POST", f"{self.base_url}/v1/chat/completions", json=payload
+        ) as response:
             response.raise_for_status()
             async for line in response.aiter_lines():
                 if line.startswith("data: "):
@@ -131,7 +142,7 @@ class LocalProvider(LLMProvider):
             provider=ProviderType.LOCAL,
             model=model,
             tokens_used=data.get("usage", {}).get("total_tokens", 0),
-            latency_ms=latency_ms
+            latency_ms=latency_ms,
         )
 
     async def health_check(self) -> bool:
@@ -154,7 +165,7 @@ class LocalProvider(LLMProvider):
 if os.getenv("LOCAL_LLM_URL"):
     try:
         provider = LocalProvider(base_url=os.getenv("LOCAL_LLM_URL"))
-        if await provider.health_check():
+        if asyncio.run(provider.health_check()):
             registry.register(provider, is_primary=False)
     except Exception:
         pass

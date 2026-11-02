@@ -19,8 +19,8 @@
 ## Quick Start
 
 ### Zero-Setup (Browser)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USER/LMp2LMa)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/YOUR_USER/LMp2LMa)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NolaNexus/LMp2LMa/blob/master/)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/NolaNexus/LMp2LMa?devcontainer_path=.devcontainer/devcontainer.json)
 
 ### Local (CPU)
 ```bash
