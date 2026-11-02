@@ -5,8 +5,9 @@ Usage:
                                     [--only track-01-ml-programmer]
 
 Runs `jupyter nbconvert --execute` per notebook into a temporary directory so
-the source notebooks are never modified. Writes `.kilo/execution_report.md`.
+the source notebooks are never modified. Writes `artifacts/execution_report.md`.
 """
+
 import argparse
 import datetime as dt
 import os
@@ -22,7 +23,7 @@ TRACKS = [
     "track-03-ml-engineer",
     "track-04-ml-architect",
 ]
-REPORT = ROOT / ".kilo" / "execution_report.md"
+REPORT = ROOT / "artifacts" / "execution_report.md"
 
 
 def notebooks(only: str | None):

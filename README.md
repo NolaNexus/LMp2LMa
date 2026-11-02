@@ -158,7 +158,7 @@ Features:
 
 ## Cross-Reference: Skillsoft Course → Notebook
 
-See `.kilo/plan/plan_0001.md` for full 75-course cross-reference matrix.
+See `~/.opencode/plan/plan_0001-curriculum-remediation.md` for the full 75-course cross-reference matrix (kept outside the repo, alongside the other plans).
 
 ---
 
