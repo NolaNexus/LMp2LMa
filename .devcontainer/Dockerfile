@@ -44,9 +44,10 @@ RUN apt-get update \
 
 WORKDIR /workspaces/LMp2LMa
 
-COPY requirements-ci.txt requirements-assessment.txt ./
+COPY requirements-ci.txt requirements-assessment.txt requirements-gpu-cu126.txt ./
 RUN python3 -m pip install --upgrade pip \
-    && python3 -m pip install -r requirements-ci.txt -r requirements-assessment.txt
+    && python3 -m pip install -r requirements-ci.txt -r requirements-assessment.txt \
+    && python3 -m pip install -r requirements-gpu-cu126.txt
 
 COPY . .
 RUN python3 -m pip install -e . || true

@@ -1,21 +1,23 @@
-version: '3.8'
+x-build: &build
+  context: .
+  dockerfile: .devcontainer/Dockerfile
 services:
   cpu-dev:
     build:
-      context: .
-      target: cpu-dev
+      <<: *build
+      target: dev
     volumes:
-      - .:/workspace
-    working_dir: /workspace
+      - .:/workspaces/LMp2LMa
+    working_dir: /workspaces/LMp2LMa
     command: bash
 
   gpu-dev:
     build:
-      context: .
+      <<: *build
       target: gpu-dev
     volumes:
-      - .:/workspace
-    working_dir: /workspace
+      - .:/workspaces/LMp2LMa
+    working_dir: /workspaces/LMp2LMa
     command: bash
     deploy:
       resources:
@@ -27,11 +29,11 @@ services:
 
   dashboard:
     build:
-      context: .
-      target: cpu-dev
+      <<: *build
+      target: dev
     volumes:
-      - .:/workspace
-    working_dir: /workspace
+      - .:/workspaces/LMp2LMa
+    working_dir: /workspaces/LMp2LMa
     ports:
       - "8501:8501"
     command: streamlit run dashboard/app.py --server.address=0.0.0.0

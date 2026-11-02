@@ -136,7 +136,7 @@ pytest tests/ -v
 - **`checkpoints/`**: Skill checkpoints per track (JSON, auto-graded)
 - **`dashboard/`**: Streamlit progress tracking dashboard
 - **`requirements*.txt`**: CPU/GPU/CI variants with lock files
-- **`Dockerfile`**: Multi-stage dev environments
+- **`.devcontainer/Dockerfile`**: single multi-stage dev image (dev / gpu-dev) used by both Codespaces and `docker compose`
 - **`BADGES.md`**: Colab/Kaggle/Codespaces badge templates
 
 ---
