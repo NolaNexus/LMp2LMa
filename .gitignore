@@ -1,0 +1,13 @@
+# ML Architect Journey — Large files and build artifacts
+artifacts/*.joblib
+data/
+track-*/data/
+__pycache__/
+.pytest_cache/
+.venv/
+mlruns/
+*.bak
+*.ipynb.bak
+*.ipynb_checkpoints/
+analysis_output.txt
+=*

@@ -1,0 +1,18 @@
+# ML Architect Journey - GPU PyTorch for Maxwell (Quadro M5000, sm_52)
+#
+# Install (Python 3.11, conda env ml-arch):
+#   python -m pip install --index-url https://download.pytorch.org/whl/cu126 -r requirements-gpu-cu126.txt
+#
+# Why these pins:
+#   - CUDA 13.x removed offline compilation for compute capability < 7.5, and
+#     PyTorch 2.15 removed its CUDA 12.6 wheels. PyTorch 2.14.1+cu126 is the
+#     newest prebuilt release that ships sm_50 kernels (usable on sm_52).
+#   - Driver 580.x is the last NVIDIA branch supporting Maxwell; do not install
+#     nvidia-utils / nvidia-open 595+ on this machine.
+#   - torchaudio has no cu126 build above 2.11.0 and is unused by this repo; omit it.
+#   - The rest of the project dependencies come from requirements.txt.
+
+--index-url https://download.pytorch.org/whl/cu126
+
+torch==2.14.1+cu126
+torchvision==0.29.1+cu126

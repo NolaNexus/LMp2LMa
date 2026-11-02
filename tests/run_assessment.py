@@ -1,36 +1,46 @@
-"""Assessment runner: executes pytest + nbval + checkpoint validation"""
+"""Assessment runner: structural validation + unit tests + notebook execution."""
+import json
 import subprocess
 import sys
-import json
 from pathlib import Path
 
-def run_nbval():
-    """Run nbval on all notebooks"""
-    cmd = [
-        sys.executable, "-m", "pytest", 
-        "--nbval", "--nbval-lax",
-        "-v", "--tb=short",
-        "track-01-ml-programmer", "track-02-dl-programmer",
-        "track-03-ml-engineer", "track-04-ml-architect"
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=3600)
+ROOT = Path(__file__).resolve().parents[1]
+
+FAST_SUBSET = [
+    "track-01-ml-programmer/01_data_preprocessing.ipynb",
+    "track-01-ml-programmer/02_experiment_tracking.ipynb",
+    "track-02-dl-programmer/01_nn_fundamentals.ipynb",
+    "track-02-dl-programmer/02_cnn_vision.ipynb",
+]
+
+
+def _run(cmd, timeout):
+    return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+
+
+def run_validator():
+    result = _run([sys.executable, "tools/validate_notebooks.py"], timeout=300)
     return result.returncode == 0, result.stdout, result.stderr
+
 
 def run_unit_tests():
-    """Run unit tests"""
-    cmd = [sys.executable, "-m", "pytest", "tests/", "-v", "--tb=short", "-m", "not slow"]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    cmd = [sys.executable, "-m", "pytest", "tests/", "-q", "--tb=short", "-m", "not slow"]
+    result = _run(cmd, timeout=600)
     return result.returncode == 0, result.stdout, result.stderr
 
+
+def run_nbval():
+    """Execute the fast subset and compare with nbval in lax mode."""
+    cmd = [sys.executable, "-m", "pytest", "--nbval-lax", "-q", "--tb=short"] + FAST_SUBSET
+    result = _run(cmd, timeout=3600)
+    return result.returncode == 0, result.stdout, result.stderr
+
+
 def validate_checkpoints():
-    """Validate checkpoint JSON structure"""
-    cp_dir = Path("checkpoints")
     errors = []
-    for cp_file in cp_dir.glob("*.json"):
+    for cp_file in (ROOT / "checkpoints").glob("*.json"):
         try:
-            with open(cp_file) as f:
-                data = json.load(f)
-            # Validate required fields
+            data = json.loads(cp_file.read_text())
             assert "track" in data
             assert "checkpoints" in data
             assert "final_exam" in data
@@ -41,42 +51,40 @@ def validate_checkpoints():
                 assert "questions" in cp
         except Exception as e:
             errors.append(f"{cp_file}: {e}")
-    return len(errors) == 0, errors
+    return not errors, errors
 
-if __name__ == "__main__":
+
+def main() -> int:
     print("=" * 60)
     print("ML ARCHITECT JOURNEY - ASSESSMENT RUNNER")
     print("=" * 60)
-    
-    # Validate checkpoints
-    print("\n[1/3] Validating checkpoint JSON...")
+
+    print("\n[1/4] Validating notebook structure...")
+    ok, out, err = run_validator()
+    print("  PASS" if ok else f"  FAIL\n{err[:2000]}")
+    if not ok:
+        return 1
+
+    print("\n[2/4] Validating checkpoint JSON...")
     ok, errors = validate_checkpoints()
-    if ok:
-        print("  ✅ Checkpoints valid")
-    else:
-        print("  ❌ Checkpoint errors:")
-        for e in errors:
-            print(f"    - {e}")
-    
-    # Run unit tests
-    print("\n[2/3] Running unit tests...")
+    print("  PASS" if ok else "  FAIL\n  - " + "\n  - ".join(errors))
+    if not ok:
+        return 1
+
+    print("\n[3/4] Running unit tests...")
     ok, out, err = run_unit_tests()
-    if ok:
-        print("  ✅ Unit tests passed")
-    else:
-        print("  ❌ Unit tests failed")
-        print(err[:500])
-    
-    # Run nbval (notebook validation)
-    print("\n[3/3] Running nbval notebook validation...")
-    print("  (This may take several minutes...)")
+    print("  PASS" if ok else f"  FAIL\n{out[-2000:]}")
+    if not ok:
+        return 1
+
+    print("\n[4/4] Executing fast notebook subset (nbval lax)...")
     ok, out, err = run_nbval()
-    if ok:
-        print("  ✅ All notebooks execute successfully")
-    else:
-        print("  ⚠️  Some notebooks had errors (see output)")
-        print(err[:1000])
-    
+    print("  PASS" if ok else f"  FAIL\n{(out + err)[-3000:]}")
     print("\n" + "=" * 60)
-    print("ASSESSMENT COMPLETE")
+    print("ASSESSMENT COMPLETE" if ok else "ASSESSMENT HAS FAILURES")
     print("=" * 60)
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

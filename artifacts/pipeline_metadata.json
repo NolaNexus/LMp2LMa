@@ -1,0 +1,36 @@
+{
+  "created_at": "2026-11-01T10:50:46.831961",
+  "dataset": "UCI Adult Income (OpenML ID: 1590)",
+  "target": "class",
+  "numeric_features": [
+    "age",
+    "fnlwgt",
+    "education-num",
+    "capital-gain",
+    "capital-loss",
+    "hours-per-week"
+  ],
+  "categorical_features": [
+    "workclass",
+    "education",
+    "marital-status",
+    "occupation",
+    "relationship",
+    "race",
+    "sex",
+    "native-country"
+  ],
+  "train_shape": [
+    39073,
+    14
+  ],
+  "test_shape": [
+    9769,
+    14
+  ],
+  "model_type": "RandomForestClassifier",
+  "model_params": {
+    "n_estimators": 100,
+    "random_state": 42
+  }
+}

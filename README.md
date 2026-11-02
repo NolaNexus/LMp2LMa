@@ -32,6 +32,20 @@ pip install -r requirements.txt
 pip install -r requirements-gpu.txt
 ```
 
+> **Maxwell GPU hosts (Quadro M5000, sm_52):** install the CUDA 12.6 stack instead.
+> CUDA 13 wheels contain no sm_52 kernels and fail at runtime with
+> `no kernel image is available for execution on the device`.
+> ```bash
+> pip install --index-url https://download.pytorch.org/whl/cu126 -r requirements-gpu-cu126.txt
+> ```
+> NVIDIA driver branch 580.x is the last branch supporting Maxwell; do not install
+> `nvidia-utils`/`nvidia-open` 595 or newer on these machines. See
+> `requirements-gpu-cu126.txt` for details.
+>
+> Maxwell (sm_52) limits: no bf16, no TF32, no tensor cores, no FlashAttention;
+> `torch.compile`/Triton requires sm_70+ (set `TORCHDYNAMO_DISABLE=1`).
+> PyTorch GPU support for this card is frozen at 2.14.1+cu126.
+
 ### Docker
 ```bash
 docker compose up -d gpu-dev

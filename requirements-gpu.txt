@@ -1,17 +1,23 @@
 # ML Architect Journey - GPU Requirements
 # Install: pip install -r requirements-gpu.txt
-# Requires CUDA 11.8+ or 12.1+
+# PyTorch wheels: use requirements-gpu-cu126.txt on Maxwell GPUs (sm_52), or see
+# https://pytorch.org/get-started/locally/ for current CUDA builds.
+#
+# Maxwell/Pascal/Volta note (Quadro M5000, sm_52):
+#   - CUDA 13.x cannot compile for these GPUs; the newest prebuilt PyTorch is
+#     2.14.1+cu126 (see requirements-gpu-cu126.txt).
+#   - NVIDIA driver branch 580.x is the last one supporting these GPUs.
 
 # Core (from base)
 -r requirements.txt
 
 # GPU-specific
-torch>=2.0.0+cu118
-torchvision>=0.15.0+cu118
-torchaudio>=2.0.0+cu118
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
 deepspeed>=0.12.0
 bitsandbytes>=0.41.0
-faiss-gpu>=1.7.4
+# faiss-gpu>=1.7.4  # install from faiss-wheels; not on PyPI for all Python versions
 tritonclient[all]>=2.38.0
 
 # Flash Attention (optional, for transformers)

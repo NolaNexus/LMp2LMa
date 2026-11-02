@@ -1,163 +1,311 @@
 {
-  "track": "Track 4: ML Architect",
-  "module": "Architecture",
-  "checkpoints": [
+ "track": "Track 4: ML Architect",
+ "module": "Architecture",
+ "checkpoints": [
+  {
+   "id": "cp1_distributed",
+   "notebook": "01_distributed_training.ipynb",
+   "skills": [
+    "FSDP",
+    "DeepSpeed",
+    "Scaling laws",
+    "Communication overhead"
+   ],
+   "questions": [
     {
-      "id": "cp1_distributed",
-      "notebook": "01_distributed_training.ipynb",
-      "skills": [
-        "FSDP",
-        "DeepSpeed",
-        "Scaling laws",
-        "Communication overhead"
-      ],
-      "questions": [
-        {
-          "id": "q1",
-          "type": "metric",
-          "prompt": "Scaling efficiency at 8 GPUs?",
-          "expected": "float > 0.8"
-        },
-        {
-          "id": "q2",
-          "type": "concept",
-          "prompt": "FSDP vs DeepSpeed ZeRO?",
-          "expected": "FSDP: PyTorch native; DeepSpeed: more optimizations"
-        }
-      ]
+     "id": "q1",
+     "type": "metric",
+     "prompt": "Scaling efficiency at 8 GPUs?",
+     "expected": "float > 0.8"
     },
     {
-      "id": "cp2_triton",
-      "notebook": "02_triton_serving.ipynb",
-      "skills": [
-        "Triton server",
-        "Model repository",
-        "Inference",
-        "P95 benchmarking"
-      ],
-      "questions": [
-        {
-          "id": "q1",
-          "type": "metric",
-          "prompt": "Throughput (req/s)?",
-          "expected": "int"
-        },
-        {
-          "id": "q2",
-          "type": "concept",
-          "prompt": "Triton vs TorchServe?",
-          "expected": "Triton: multi-framework, dynamic batching, model pipeline"
-        }
-      ]
-    },
-    {
-      "id": "cp3_quantization",
-      "notebook": "03_quantization.ipynb",
-      "skills": [
-        "Dynamic int8",
-        "Static quantization",
-        "AMP",
-        "Size/accuracy tradeoff"
-      ],
-      "questions": [
-        {
-          "id": "q1",
-          "type": "metric",
-          "prompt": "Size reduction %?",
-          "expected": "float ~50"
-        },
-        {
-          "id": "q2",
-          "type": "concept",
-          "prompt": "When quantization hurts accuracy?",
-          "expected": "Outlier weights, sensitive layers (embeddings, first/last)"
-        }
-      ]
-    },
-    {
-      "id": "cp4_platform_design",
-      "notebook": "04_platform_design.ipynb",
-      "skills": [
-        "Requirements",
-        "Tradeoffs",
-        "ADRs",
-        "Architecture decisions"
-      ],
-      "questions": [
-        {
-          "id": "q1",
-          "type": "code_output",
-          "prompt": "Number of ADRs?",
-          "expected": "int >= 5"
-        },
-        {
-          "id": "q2",
-          "type": "concept",
-          "prompt": "ADR structure?",
-          "expected": "Context, Decision, Consequences, Status"
-        }
-      ]
-    },
-    {
-      "id": "cp5_cost",
-      "notebook": "05_cost_optimization.ipynb",
-      "skills": [
-        "Spot instances",
-        "GPU utilization",
-        "Cross-cloud pricing",
-        "9 GPU types"
-      ],
-      "questions": [
-        {
-          "id": "q1",
-          "type": "metric",
-          "prompt": "Cost savings vs on-demand?",
-          "expected": "float > 0.5"
-        },
-        {
-          "id": "q2",
-          "type": "concept",
-          "prompt": "Spot interruption handling?",
-          "expected": "Checkpointing, graceful degradation, fallback"
-        }
-      ]
-    },
-    {
-      "id": "cp6_finetune",
-      "notebook": "06_foundation_model_finetune.ipynb",
-      "skills": [
-        "4-bit quantization",
-        "LoRA/QLoRA",
-        "PEFT",
-        "97% param reduction"
-      ],
-      "questions": [
-        {
-          "id": "q1",
-          "type": "metric",
-          "prompt": "Trainable params (2.7B -> ?)",
-          "expected": "int ~67M"
-        },
-        {
-          "id": "q2",
-          "type": "concept",
-          "prompt": "QLoRA vs LoRA?",
-          "expected": "QLoRA: 4-bit base + LoRA adapters; LoRA: 16-bit base"
-        }
-      ]
+     "id": "q2",
+     "type": "concept",
+     "prompt": "FSDP vs DeepSpeed ZeRO?",
+     "expected": "FSDP: PyTorch native; DeepSpeed: more optimizations"
     }
-  ],
-  "final_exam": {
-    "questions": 20,
-    "time_minutes": 60,
-    "passing_score": 0.8,
-    "topics": [
-      "Distributed training",
-      "Triton serving",
-      "Quantization",
-      "Platform design/ADRs",
-      "Cost optimization",
-      "Foundation model fine-tuning"
-    ]
+   ]
+  },
+  {
+   "id": "cp2_triton",
+   "notebook": "02_triton_serving.ipynb",
+   "skills": [
+    "Triton server",
+    "Model repository",
+    "Inference",
+    "P95 benchmarking"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "metric",
+     "prompt": "Throughput (req/s)?",
+     "expected": "int"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "Triton vs TorchServe?",
+     "expected": "Triton: multi-framework, dynamic batching, model pipeline"
+    }
+   ]
+  },
+  {
+   "id": "cp3_quantization",
+   "notebook": "03_quantization.ipynb",
+   "skills": [
+    "Dynamic int8",
+    "Static quantization",
+    "AMP",
+    "Size/accuracy tradeoff"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "metric",
+     "prompt": "Size reduction %?",
+     "expected": "float ~50"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "When quantization hurts accuracy?",
+     "expected": "Outlier weights, sensitive layers (embeddings, first/last)"
+    }
+   ]
+  },
+  {
+   "id": "cp4_platform_design",
+   "notebook": "04_platform_design.ipynb",
+   "skills": [
+    "Requirements",
+    "Tradeoffs",
+    "ADRs",
+    "Architecture decisions"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "code_output",
+     "prompt": "Number of ADRs?",
+     "expected": "int >= 5"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "ADR structure?",
+     "expected": "Context, Decision, Consequences, Status"
+    }
+   ]
+  },
+  {
+   "id": "cp5_cost",
+   "notebook": "05_cost_optimization.ipynb",
+   "skills": [
+    "Spot instances",
+    "GPU utilization",
+    "Cross-cloud pricing",
+    "9 GPU types"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "metric",
+     "prompt": "Cost savings vs on-demand?",
+     "expected": "float > 0.5"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "Spot interruption handling?",
+     "expected": "Checkpointing, graceful degradation, fallback"
+    }
+   ]
+  },
+  {
+   "id": "cp6_finetune",
+   "notebook": "06_foundation_model_finetune.ipynb",
+   "skills": [
+    "4-bit quantization",
+    "LoRA/QLoRA",
+    "PEFT",
+    "97% param reduction"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "metric",
+     "prompt": "Trainable params (2.7B -> ?)",
+     "expected": "int ~67M"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "QLoRA vs LoRA?",
+     "expected": "QLoRA: 4-bit base + LoRA adapters; LoRA: 16-bit base"
+    }
+   ]
+  },
+  {
+   "id": "cp7_system_design",
+   "notebook": "07_system_design.ipynb",
+   "skills": [
+    "Capacity planning",
+    "Little's law",
+    "Queueing",
+    "Cost model"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "code_output",
+     "prompt": "How many replicas are required at peak?",
+     "expected": "replicas_needed: 7"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "Why does tail latency explode near full utilization?",
+     "expected": "queueing probability rises as utilization approaches one"
+    }
+   ]
+  },
+  {
+   "id": "cp8_data_architecture",
+   "notebook": "08_data_architecture.ipynb",
+   "skills": [
+    "Medallion layers",
+    "Data contracts",
+    "Idempotent ingestion",
+    "Schema evolution"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "code_output",
+     "prompt": "How many rows survive deduplication?",
+     "expected": "silver_rows: 4"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "Why is bronze append-only?",
+     "expected": "raw truth replayable immutable lineage"
+    }
+   ]
+  },
+  {
+   "id": "cp9_platform_engineering",
+   "notebook": "09_platform_engineering.ipynb",
+   "skills": [
+    "Lambda vs Kappa",
+    "Promotion gates",
+    "CI policy"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "code_output",
+     "prompt": "How many candidate models pass the promotion policy?",
+     "expected": "promoted_count: 1"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "When is Kappa preferable to Lambda?",
+     "expected": "replayable log single pipeline streaming correctness"
+    }
+   ]
+  },
+  {
+   "id": "cp10_serving_architecture",
+   "notebook": "10_serving_architecture.ipynb",
+   "skills": [
+    "Dynamic batching",
+    "Caching",
+    "Canary rollout",
+    "Error budgets"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "code_output",
+     "prompt": "Which batch size maximizes throughput under the latency cap?",
+     "expected": "optimal_batch_size: 64"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "How does a canary limit blast radius?",
+     "expected": "small traffic slice error budget rollback blast radius"
+    }
+   ]
+  },
+  {
+   "id": "cp11_iac",
+   "notebook": "11_iac.ipynb",
+   "skills": [
+    "Terraform generation",
+    "Kubernetes manifests",
+    "Policy as code"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "code_output",
+     "prompt": "How many policy violations does the generated manifest have?",
+     "expected": "policy_violations: []"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "Why should images be pinned by immutable tag or digest?",
+     "expected": "reproducible rollback supply chain immutable"
+    }
+   ]
+  },
+  {
+   "id": "cp12_profiling",
+   "notebook": "12_profiling.ipynb",
+   "skills": [
+    "Wall-clock benchmarking",
+    "torch.profiler",
+    "FLOP estimates",
+    "Memory estimates"
+   ],
+   "questions": [
+    {
+     "id": "q1",
+     "type": "concept",
+     "prompt": "What did you measure before optimizing?",
+     "expected": "parameters flops_per_sample memory_params_mb"
+    },
+    {
+     "id": "q2",
+     "type": "concept",
+     "prompt": "Why re-measure after an optimization?",
+     "expected": "before after variance warm up"
+    }
+   ]
   }
+ ],
+ "final_exam": {
+  "questions": 20,
+  "time_minutes": 60,
+  "passing_score": 0.8,
+  "topics": [
+   "Distributed training",
+   "Triton serving",
+   "Quantization",
+   "Platform design/ADRs",
+   "Cost optimization",
+   "Foundation model fine-tuning",
+   "System design",
+   "Data architecture",
+   "Platform engineering",
+   "Serving architecture",
+   "IaC",
+   "Profiling"
+  ]
+ }
 }

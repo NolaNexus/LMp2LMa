@@ -1,0 +1,18 @@
+# Heavy notebook runtime dependencies (full execution sweep)
+# Install locally with: pip install -r requirements-assessment-heavy.txt
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.35.0
+accelerate>=0.24.0
+peft>=0.6.0
+bitsandbytes>=0.41.0
+faiss-cpu>=1.7.4
+tensorflow-recommenders>=0.7.0
+neuralforecast>=1.6.0
+prophet>=1.1.5
+evidently>=0.4.0
+mlflow>=2.8.0,<3
+feast>=0.30.0
+bentoml>=1.1.0
+pyro-ppl>=1.8.0
+torch-geometric>=2.4.0

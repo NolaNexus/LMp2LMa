@@ -10,7 +10,7 @@ jobs:
   assessment:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -26,8 +26,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest nbval torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-        pip install -e . 2>/dev/null || true
+        pip install --extra-index-url https://download.pytorch.org/whl/cpu \
+          -r requirements-ci.txt -r requirements-assessment.txt
+
+    - name: Validate notebook structure
+      run: python tools/validate_notebooks.py
 
     - name: Validate checkpoint JSON structure
       run: |
@@ -58,29 +61,47 @@ jobs:
         "
 
     - name: Run unit tests
-      run: |
-        python -m pytest tests/ -v --tb=short -m "not slow" --timeout=120
+      run: python -m pytest tests/ -v --tb=short -m "not slow" --timeout=120
 
-    - name: Run nbval on core notebooks (fast subset)
+    - name: Execute fast-subset notebooks
+      env:
+        QUICK_MODE: "1"
       run: |
-        python -m pytest --nbval --nbval-lax -v --tb=short \
+        mkdir -p executed
+        for nb in \
           track-01-ml-programmer/01_data_preprocessing.ipynb \
           track-01-ml-programmer/02_experiment_tracking.ipynb \
           track-02-dl-programmer/01_nn_fundamentals.ipynb \
-          track-02-dl-programmer/02_cnn_vision.ipynb \
-          --timeout=180
+          track-02-dl-programmer/02_cnn_vision.ipynb ; do
+          track="$(dirname "$nb")"
+          mkdir -p "executed/$track"
+          python -m nbconvert --to notebook --execute --ExecutePreprocessor.timeout=300 \
+            --output-dir "executed/$track" "$nb"
+        done
+
+    - name: Run nbval on fast subset
+      env:
+        QUICK_MODE: "1"
+      run: |
+        python -m pytest --nbval-lax -v --tb=short --timeout=300 \
+          executed/track-01-ml-programmer \
+          executed/track-02-dl-programmer
 
     - name: Run grader on all tracks
       run: |
+        set -e
         for track in track_01_ml_programmer track_02_dl_programmer track_03_ml_engineer track_04_ml_architect; do
           echo "=== Grading $track ==="
-          python tests/final_exam_grader.py "$track" --json > "grader_output_${track}.json"
-          python -c "
-          import json
-          with open('grader_output_${track}.json') as f:
-              r = json.load(f)
-          print(f'{r[\"track\"]}: {r[\"total_score\"]}/{r[\"max_score\"]} ({r[\"percentage\"]}%) - {r[\"status\"]}')
-          "
+          python tests/final_exam_grader.py "$track" --json \
+            --notebook-dir executed > "grader_output_${track}.json"
+          python - <<PY
+        import json
+        with open("grader_output_${track}.json") as f:
+            r = json.load(f)
+        print(f"{r['track']}: {r['total_score']}/{r['max_score']} ({r['percentage']}%) - {r['status']}")
+        if r["status"] == "ERROR":
+            raise SystemExit(1)
+        PY
         done
 
     - name: Upload grader results
@@ -96,12 +117,10 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          const glob = require('glob');
-          const files = glob.sync('grader_output_*.json');
+          const files = fs.readdirSync('.').filter((f) => f.startsWith('grader_output_') && f.endsWith('.json'));
           let comment = '## ML Architect Assessment Results\n\n';
           for (const file of files) {
-            const content = fs.readFileSync(file, 'utf8');
-            const result = JSON.parse(content);
+            const result = JSON.parse(fs.readFileSync(file, 'utf8'));
             comment += `**${result.track}**: ${result.total_score}/${result.max_score} (${result.percentage}%) - ${result.status}\n`;
           }
           github.rest.issues.createComment({

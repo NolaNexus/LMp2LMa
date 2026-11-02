@@ -140,7 +140,9 @@ def show_final_exams():
         with st.expander(f"{track_name} - Final Exam"):
             st.write(f"**Questions:** {exam.get('questions', 'N/A')}")
             st.write(f"**Time:** {exam.get('time_minutes', 'N/A')} minutes")
-            st.write(f"**Passing Score:** {exam.get('passing_score', 'N/A')*100:.0f}%")
+            passing = exam.get("passing_score")
+            passing_text = f"{passing * 100:.0f}%" if isinstance(passing, (int, float)) else "N/A"
+            st.write(f"**Passing Score:** {passing_text}")
             st.write("**Topics:**")
             for topic in exam.get("topics", []):
                 st.write(f"  - {topic}")

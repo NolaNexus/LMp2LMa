@@ -1,7 +1,5 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
-  "model": "thinkingmachines/inkling:free",
-  "small_model": "xingchen-agi/xing4.0-29b-a4b:free",
   "default_agent": "code",
   "provider": {
     "openrouter": {
@@ -20,24 +18,15 @@
       "type": "remote",
       "url": "https://anaconda.com/api/mcp"
     },
-    "companion-smoke-test": {
-      "type": "glob",
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-everything"
-      ]
+    "jupyter": {
+      "type": "local",
+      "command": ["/home/nola/LMp2LMa/.kilo/mcp/jupyter-mcp.sh"],
+      "enabled": true
     },
-    "context7": {
-      "type": "glob",
-      "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
-      ],
-      "environment": {
-        "DEFAULT_MINIMUM_TOKENS": "{{DEFAULT_MINIMUM_TOKENS}}"
-      }
+    "nteract": {
+      "type": "local",
+      "command": ["/home/nola/.local/bin/nteract", "mcp", "--no-show"],
+      "enabled": true
     }
   },
   "permission": {

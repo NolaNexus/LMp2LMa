@@ -1,8 +1,31 @@
 {
   "name": "ML Architect Journey",
-  "build": {"dockerfile":"Dockerfile","target":"dev"},
-  "customizations":{"vscode":{"extensions":["ms-python.python","ms-toolsai.jupyter","github.copilot"]}},
-  "runArgs":["--gpus","all"],
-  "postCreateCommand":"pip install -r requirements-gpu.txt || pip install -r requirements.txt",
-  "remoteUser":"root"
+  "build": {
+    "dockerfile": "Dockerfile",
+    "target": "dev"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "charliermarsh.ruff",
+        "github.copilot"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.testing.pytestEnabled": true,
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  },
+  "//runArgs": "GPU access is opt-in: add \"--gpus\", \"all\" and build.target=\"gpu-dev\" on a CUDA host. Leaving it out keeps Codespaces working.",
+  "runArgs": [],
+  "forwardPorts": [8501, 8888],
+  "postCreateCommand": "pip install -r requirements-ci.txt -r requirements-assessment.txt",
+  "postStartCommand": "python tools/validate_notebooks.py",
+  "remoteUser": "root"
 }

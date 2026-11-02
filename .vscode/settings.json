@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "track-01-ml-programmer"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

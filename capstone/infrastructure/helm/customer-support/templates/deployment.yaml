@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "customer-support.fullname" . }}
+  labels:
+    app: {{ include "customer-support.name" . }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "customer-support.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "customer-support.name" . }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          env:
+            - name: LLM_PROVIDER
+              value: {{ .Values.env.LLM_PROVIDER | quote }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.livenessPath }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readinessPath }}
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "customer-support.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "customer-support.name" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      name: http
