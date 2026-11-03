@@ -3,7 +3,7 @@ artifacts/*.joblib
 artifacts/retrieval/
 artifacts/skills/
 artifacts/execution_report.md
-data/
+/data/
 track-*/data/
 __pycache__/
 .pytest_cache/
