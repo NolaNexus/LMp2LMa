@@ -229,7 +229,10 @@ def seal_probe(worktree: Path, arm: str, agent: str) -> None:
     skill = SKILL_RE.search(text)
     root = ROOT_RE.search(text)
     if not skill or not root:
-        raise RuntimeError(f"seal probe unparseable: {text.strip()[:200]!r}")
+        raise RuntimeError(
+            f"seal probe unparseable (exit={proc.returncode}): "
+            f"{text.strip()[:200]!r} stderr={proc.stderr.strip()[:400]!r}"
+        )
     if root.group(1) != str(worktree):
         raise RuntimeError(f"seal probe: retrieval root is {root.group(1)}, expected {worktree}")
     if arm == "without" and skill.group(1) != "failed":
