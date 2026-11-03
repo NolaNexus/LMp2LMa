@@ -4,8 +4,18 @@ repos:
     hooks:
       - id: ruff
         args: [--fix]
+        # Notebooks are teaching artifacts: tools/normalize_notebooks.py owns
+        # their structure and validate_notebooks.py owns their syntax. Letting
+        # ruff rewrite code cells renumbers cell ids and reformats every cell,
+        # which buries a one-line repair under a whole-file diff.
+        types_or: [python, pyi]
       - id: ruff-format
+        types_or: [python, pyi]
   - repo: https://github.com/kynan/nbstripout
     rev: 0.7.1
     hooks:
       - id: nbstripout
+        # nbstripout drops cell ids by default; nbformat then renumbers them,
+        # so a no-op commit rewrote every cell id in the file. Ids are how the
+        # normalizer and the grader address cells, so they stay.
+        args: [--keep-id]
