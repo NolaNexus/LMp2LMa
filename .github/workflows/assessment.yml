@@ -98,13 +98,14 @@ jobs:
       # gates until they are calibrated against real outputs (A13).
       continue-on-error: true
       run: |
-        for track in track_01_ml_programmer track_02_dl_programmer track_03_ml_engineer track_04_ml_architect; do
+        while IFS= read -r dir; do
+          track="${dir//-/_}"
           echo "=== Grading $track ==="
           out="grader_output_${track}.json"
           python tests/final_exam_grader.py "$track" --json \
             --notebook-dir executed --only-notebooks subset.txt > "$out" || true
           cat "$out"
-        done
+        done < <(cut -d/ -f1 subset.txt | sort -u)
 
     - name: Upload grader results
       if: always()
