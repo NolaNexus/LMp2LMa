@@ -1,4 +1,5 @@
 """Contract tests for the customer-support FastAPI service (mock provider)."""
+
 import pytest
 
 pytest.importorskip("fastapi")
@@ -36,7 +37,10 @@ def test_chat_validates_empty_message():
 def test_classify_billing():
     response = client.post(
         "/tickets/classify",
-        json={"subject": "Refund request", "body": "My payment failed and I want a refund for this invoice"},
+        json={
+            "subject": "Refund request",
+            "body": "My payment failed and I want a refund for this invoice",
+        },
     )
     assert response.status_code == 200
     body = response.json()

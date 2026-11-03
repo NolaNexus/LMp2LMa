@@ -2,10 +2,11 @@
 LLM-powered Customer Support System
 Core domain models and interfaces
 """
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 

@@ -11,6 +11,8 @@ requires-python = ">=3.10"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+# Notebook cells are fragments that reference cross-cell globals; skip them.
+extend-exclude = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]

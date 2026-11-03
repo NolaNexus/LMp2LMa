@@ -1,4 +1,9 @@
-name: ML Architect Assessment
+# Scoped on purpose: this workflow executes a generated subset, not all 38
+# notebooks. The workflow name says so. Structural validation and nbval gate the
+# build; the grader runs in report-only mode until checkpoint expectations are
+# calibrated (A13), but it no longer treats NOT_EXECUTED as a pass.
+# Full-repo execution is `tools/execution_sweep.py` on the GPU machine.
+name: ML Architect Assessment (scoped fast subset)
 
 on:
   push:
@@ -10,6 +15,9 @@ jobs:
   assessment:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
     - name: Checkout repository
@@ -63,62 +71,63 @@ jobs:
     - name: Run unit tests
       run: python -m pytest tests/ -v --tb=short -m "not slow" --timeout=120
 
-    - name: Execute fast-subset notebooks
+    - name: Select execution subset (A2)
+      run: |
+        python tools/execution_subset.py > subset.txt
+        echo "--- subset ---"
+        cat subset.txt
+
+    - name: Execute subset notebooks
       env:
         QUICK_MODE: "1"
       run: |
-        mkdir -p executed
-        for nb in \
-          track-01-ml-programmer/01_data_preprocessing.ipynb \
-          track-01-ml-programmer/02_experiment_tracking.ipynb \
-          track-02-dl-programmer/01_nn_fundamentals.ipynb \
-          track-02-dl-programmer/02_cnn_vision.ipynb ; do
+        while IFS= read -r nb; do
           track="$(dirname "$nb")"
           mkdir -p "executed/$track"
           python -m nbconvert --to notebook --execute --ExecutePreprocessor.timeout=300 \
             --output-dir "executed/$track" "$nb"
-        done
+        done < subset.txt
 
-    - name: Run nbval on fast subset
+    - name: Run nbval on the subset
       env:
         QUICK_MODE: "1"
       run: |
-        python -m pytest --nbval-lax -v --tb=short --timeout=300 \
-          executed/track-01-ml-programmer \
-          executed/track-02-dl-programmer
+        mapfile -t executed < <(sed 's|^|executed/|' subset.txt)
+        python -m pytest --nbval-lax -v --tb=short --timeout=300 "${executed[@]}"
 
-    - name: Run grader on all tracks
+    - name: Grade the scoped subset (report only, see A13)
+      # The grader now exits non-zero for NOT_EXECUTED/FAIL (§0.2). Checkpoint
+      # expectations are still placeholders, so this step reports rather than
+      # gates until they are calibrated against real outputs (A13).
+      continue-on-error: true
       run: |
-        set -e
-        for track in track_01_ml_programmer track_02_dl_programmer track_03_ml_engineer track_04_ml_architect; do
+        while IFS= read -r dir; do
+          track="${dir//-/_}"
           echo "=== Grading $track ==="
+          out="grader_output_${track}.json"
           python tests/final_exam_grader.py "$track" --json \
-            --notebook-dir executed > "grader_output_${track}.json"
-          python - <<PY
-        import json
-        with open("grader_output_${track}.json") as f:
-            r = json.load(f)
-        print(f"{r['track']}: {r['total_score']}/{r['max_score']} ({r['percentage']}%) - {r['status']}")
-        if r["status"] == "ERROR":
-            raise SystemExit(1)
-        PY
-        done
+            --notebook-dir executed --only-notebooks subset.txt > "$out" || true
+          cat "$out"
+        done < <(cut -d/ -f1 subset.txt | sort -u)
 
     - name: Upload grader results
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: grader-results
-        path: grader_output_*.json
+        path: |
+          subset.txt
+          grader_output_*.json
         retention-days: 7
 
     - name: Comment PR with results
-      if: github.event_name == 'pull_request'
+      if: always() && github.event_name == 'pull_request'
       uses: actions/github-script@v7
       with:
         script: |
           const fs = require('fs');
           const files = fs.readdirSync('.').filter((f) => f.startsWith('grader_output_') && f.endsWith('.json'));
-          let comment = '## ML Architect Assessment Results\n\n';
+          let comment = '## ML Architect Assessment Results (scoped fast subset)\n\n';
           for (const file of files) {
             const result = JSON.parse(fs.readFileSync(file, 'utf8'));
             comment += `**${result.track}**: ${result.total_score}/${result.max_score} (${result.percentage}%) - ${result.status}\n`;

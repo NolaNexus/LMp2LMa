@@ -1,6 +1,9 @@
 # ML Architect Journey — Large files and build artifacts
 artifacts/*.joblib
-data/
+artifacts/retrieval/
+artifacts/skills/
+artifacts/execution_report.md
+/data/
 track-*/data/
 __pycache__/
 .pytest_cache/

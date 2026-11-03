@@ -1,4 +1,5 @@
 """Tests for metrics collection and drift detection."""
+
 import numpy as np
 
 from capstone.monitoring.metrics import DriftDetector, MetricsCollector, RequestMetric
@@ -7,7 +8,9 @@ from capstone.monitoring.metrics import DriftDetector, MetricsCollector, Request
 def test_metrics_summary_percentiles():
     collector = MetricsCollector()
     for latency in (100, 120, 140, 900):
-        collector.record(RequestMetric(route="/chat", latency_ms=latency, tokens=50, provider="mock"))
+        collector.record(
+            RequestMetric(route="/chat", latency_ms=latency, tokens=50, provider="mock")
+        )
     summary = collector.summary()
     assert summary["requests"] == 4
     assert summary["latency_p50_ms"] == 130.0

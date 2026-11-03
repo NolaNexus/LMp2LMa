@@ -1,12 +1,20 @@
 """
 Mock Provider for Testing
 """
-import time
+
+import asyncio
+import json
 import random
-from typing import List, Dict, Any, AsyncIterator
+from typing import AsyncIterator, List
+
 from capstone.serving.llm.providers import (
-    LLMProvider, ProviderType, LLMRequest, LLMResponse,
-    EmbeddingRequest, EmbeddingResponse, registry
+    EmbeddingRequest,
+    EmbeddingResponse,
+    LLMProvider,
+    LLMRequest,
+    LLMResponse,
+    ProviderType,
+    registry,
 )
 
 
@@ -39,21 +47,25 @@ class MockProvider(LLMProvider):
         # Generate contextual response based on prompt
         prompt_lower = request.prompt.lower()
         if "classify" in prompt_lower or "category" in prompt_lower:
-            text = json.dumps({
-                "category": "technical",
-                "confidence": 0.92,
-                "priority": "medium",
-                "reasoning": "Mock classification for testing"
-            })
+            text = json.dumps(
+                {
+                    "category": "technical",
+                    "confidence": 0.92,
+                    "priority": "medium",
+                    "reasoning": "Mock classification for testing",
+                }
+            )
         elif "generate" in prompt_lower or "response" in prompt_lower:
             text = "Thank you for contacting support. I understand your issue and I'm here to help. Based on your description, this appears to be a technical issue that we can resolve. Let me provide you with some troubleshooting steps..."
         elif "escalate" in prompt_lower:
-            text = json.dumps({
-                "should_escalate": False,
-                "reason": null,
-                "confidence": 0.85,
-                "reasoning": "Mock escalation decision"
-            })
+            text = json.dumps(
+                {
+                    "should_escalate": False,
+                    "reason": None,
+                    "confidence": 0.85,
+                    "reasoning": "Mock escalation decision",
+                }
+            )
         else:
             text = "Mock response for: " + request.prompt[:50]
 
@@ -64,7 +76,7 @@ class MockProvider(LLMProvider):
             tokens_used=len(text) // 4,
             latency_ms=self.delay_ms,
             finish_reason="stop",
-            metadata={"mock": True}
+            metadata={"mock": True},
         )
 
     async def generate_stream(self, request: LLMRequest) -> AsyncIterator[str]:
@@ -83,10 +95,11 @@ class MockProvider(LLMProvider):
         for text in request.texts:
             # Simple hash-based embedding for reproducibility
             import hashlib
+
             hash_val = int(hashlib.md5(text.encode()).hexdigest(), 16)
             embedding = [(hash_val >> i) & 1 for i in range(1536)]
             # Normalize
-            norm = sum(x*x for x in embedding) ** 0.5
+            norm = sum(x * x for x in embedding) ** 0.5
             embedding = [x / norm if norm > 0 else 0 for x in embedding]
             embeddings.append(embedding)
 
@@ -95,15 +108,12 @@ class MockProvider(LLMProvider):
             provider=ProviderType.MOCK,
             model="mock-embedding",
             tokens_used=sum(len(t) // 4 for t in request.texts),
-            latency_ms=self.delay_ms
+            latency_ms=self.delay_ms,
         )
 
     async def health_check(self) -> bool:
         return True
 
-
-import asyncio
-import json
 
 # Auto-register mock for testing
 registry.register(MockProvider(), is_primary=False)

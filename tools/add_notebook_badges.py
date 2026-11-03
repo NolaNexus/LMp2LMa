@@ -9,6 +9,7 @@ If no slug can be resolved the tool exits without modifying anything and prints
 how to supply one. Badge cells are idempotent: re-running replaces the existing
 badge cell instead of adding a duplicate.
 """
+
 import argparse
 import json
 import os
@@ -84,7 +85,11 @@ def main() -> int:
             text = badge_cell(slug, rel)
 
             existing = next(
-                (i for i, c in enumerate(cells) if c.get("cell_type") == "markdown" and MARKER in "".join(c.get("source", []))),
+                (
+                    i
+                    for i, c in enumerate(cells)
+                    if c.get("cell_type") == "markdown" and MARKER in "".join(c.get("source", []))
+                ),
                 None,
             )
             if existing is not None:

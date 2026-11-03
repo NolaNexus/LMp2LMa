@@ -1,0 +1,57 @@
+{
+  "_comment": "Routing and over-trigger eval for the M2 gate. `skill: null` is a negative control: no skill may clear the score threshold. Edit freely; the gate is a pass rate, not a fixed count.",
+  "tasks": [
+    {
+      "task": "add a new notebook to track-02 and make sure it passes validation",
+      "skill": "notebook-editing"
+    },
+    {
+      "task": "where do the notebooks and the tests live in this repository",
+      "skill": "repo-orientation"
+    },
+    {
+      "task": "semantic search across the repo to find the feature store section",
+      "skill": "retrieval-mcp"
+    },
+    {
+      "task": "how should I write a skill description so it triggers at the right time",
+      "skill": "authoring-skills"
+    },
+    {
+      "task": "strip notebook outputs before committing",
+      "skill": "notebook-editing"
+    },
+    {
+      "task": "the retrieval server is not responding, restart the services",
+      "skill": "retrieval-mcp"
+    },
+    {
+      "task": "I just cloned this repo, what is the directory structure",
+      "skill": "repo-orientation"
+    },
+    {
+      "task": "retire a skill that keeps failing the lint",
+      "skill": "authoring-skills"
+    },
+    {
+      "task": "nbformat validation is failing on a cell, how do I repair the notebook",
+      "skill": "notebook-editing"
+    },
+    {
+      "task": "reindex a notebook I just edited",
+      "skill": "retrieval-mcp"
+    },
+    {
+      "task": "plot a confusion matrix for the capstone classifier",
+      "skill": null
+    },
+    {
+      "task": "write a SQL migration for the dashboard database",
+      "skill": null
+    },
+    {
+      "task": "deploy the model to kubernetes with a GPU node pool",
+      "skill": null
+    }
+  ]
+}

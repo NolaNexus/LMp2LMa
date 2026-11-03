@@ -1,4 +1,5 @@
 """Unit tests for the capstone retrieval layer."""
+
 from capstone.serving.rag import FaqRetriever, answer_with_retrieval
 
 

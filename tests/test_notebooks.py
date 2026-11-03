@@ -7,6 +7,7 @@ Fast tests (default):
 Notebook *execution* is covered separately by `pytest --nbval-lax` on the fast
 subset (see .github/workflows/assessment.yml) and by the grader.
 """
+
 import ast
 import json
 from pathlib import Path

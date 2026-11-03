@@ -5,7 +5,11 @@ Status semantics:
   FAIL          percentage < 70
   NOT_EXECUTED  one or more checkpoints could not be graded because the notebook
                 has no stored outputs (run the notebook first)
+
+Exit codes: 0 only for PASS. FAIL, NOT_EXECUTED and ERROR exit 1, so CI cannot
+mistake an ungraded notebook for a passing one (ROADMAP §0.2).
 """
+
 import argparse
 import json
 import os
@@ -114,11 +118,39 @@ def _match_question(question, outputs):
     return False, None
 
 
-def grade_track(track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_DIR):
-    """Grade a track by comparing checkpoint expectations to notebook outputs."""
+def _normalise_scope(only_notebooks):
+    """Accept None, an iterable of paths, or a path to a newline-separated file."""
+    if only_notebooks is None:
+        return None
+    if isinstance(only_notebooks, (str, os.PathLike)):
+        candidate = os.fspath(only_notebooks)
+        if os.path.isfile(candidate):
+            with open(candidate, encoding="utf-8") as f:
+                entries = [line.strip() for line in f if line.strip()]
+        else:
+            entries = [part.strip() for part in candidate.split(",") if part.strip()]
+    else:
+        entries = list(only_notebooks)
+    return {os.path.basename(entry) for entry in entries}
+
+
+def grade_track(
+    track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_DIR, only_notebooks=None
+):
+    """Grade a track by comparing checkpoint expectations to notebook outputs.
+
+    `only_notebooks` scopes grading to the notebooks the caller actually
+    executed. Checkpoints for other notebooks are not counted, so a scoped CI
+    run reports NOT_EXECUTED only when a notebook it *did* run lacks outputs.
+    """
     checkpoint_file = os.path.join(checkpoint_dir, f"{track_id}.json")
     if not os.path.exists(checkpoint_file):
-        return {"track": track_id, "error": "Checkpoint file not found", "score": 0, "status": "ERROR"}
+        return {
+            "track": track_id,
+            "error": "Checkpoint file not found",
+            "score": 0,
+            "status": "ERROR",
+        }
 
     with open(checkpoint_file, encoding="utf-8") as f:
         data = json.load(f)
@@ -126,6 +158,16 @@ def grade_track(track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_D
     track_name = data.get("track", track_id)
     checkpoints = data.get("checkpoints", [])
     final_exam = data.get("final_exam", {})
+    scope = _normalise_scope(only_notebooks)
+    if scope is not None:
+        checkpoints = [cp for cp in checkpoints if cp.get("notebook") in scope]
+        if not checkpoints:
+            return {
+                "track": track_name,
+                "error": "No checkpoints match the requested notebook scope",
+                "score": 0,
+                "status": "ERROR",
+            }
 
     results = {
         "track": track_name,
@@ -133,6 +175,7 @@ def grade_track(track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_D
         "total_score": 0,
         "max_score": 0,
         "notebooks_missing_outputs": [],
+        "scoped_notebooks": sorted(scope) if scope is not None else None,
     }
 
     track_dir = TRACK_DIRS.get(track_id, track_id)
@@ -177,7 +220,9 @@ def grade_track(track_id, notebook_dir=NOTEBOOK_DIR, checkpoint_dir=CHECKPOINT_D
 
     results["final_exam"] = final_exam
     results["percentage"] = (
-        round(results["total_score"] / results["max_score"] * 100, 1) if results["max_score"] > 0 else 0.0
+        round(results["total_score"] / results["max_score"] * 100, 1)
+        if results["max_score"] > 0
+        else 0.0
     )
 
     if results["notebooks_missing_outputs"]:
@@ -204,24 +249,38 @@ def main(argv=None):
         default=CHECKPOINT_DIR,
         help="Directory containing checkpoint JSON (default: checkpoints)",
     )
+    parser.add_argument(
+        "--only-notebooks",
+        default=None,
+        help="Grade only these notebooks: a file with one path per line, or a comma list",
+    )
     args = parser.parse_args(argv)
 
-    result = grade_track(args.track, notebook_dir=args.notebook_dir, checkpoint_dir=args.checkpoint_dir)
+    result = grade_track(
+        args.track,
+        notebook_dir=args.notebook_dir,
+        checkpoint_dir=args.checkpoint_dir,
+        only_notebooks=args.only_notebooks,
+    )
+
+    # NOT_EXECUTED is a failure: a checkpoint that could not be graded is not a
+    # pass (ROADMAP §0.2). Only a fully executed, >=70% track exits 0.
+    exit_code = 0 if result.get("status") == "PASS" else 1
 
     if args.json:
         print(json.dumps(result, indent=2))
-        return 0
+        return exit_code
 
     print(f"Track: {result['track']}")
     if result.get("error"):
         print(f"Error: {result['error']}")
-        return 1
+        return exit_code
     print(f"Score: {result['total_score']}/{result['max_score']} ({result['percentage']}%)")
     print(f"Status: {result['status']}")
     for cp in result["checkpoints"]:
         executed = "" if cp["executed"] else "  [not executed]"
         print(f"  {cp['id']}: {cp['score']}/{cp['max_score']}{executed}")
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

@@ -1,17 +1,16 @@
 """Assessment runner: structural validation + unit tests + notebook execution."""
+
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 
-FAST_SUBSET = [
-    "track-01-ml-programmer/01_data_preprocessing.ipynb",
-    "track-01-ml-programmer/02_experiment_tracking.ipynb",
-    "track-02-dl-programmer/01_nn_fundamentals.ipynb",
-    "track-02-dl-programmer/02_cnn_vision.ipynb",
-]
+from execution_subset import select  # noqa: E402
+
+FAST_SUBSET = select(ROOT)
 
 
 def _run(cmd, timeout):
