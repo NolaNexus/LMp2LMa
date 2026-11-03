@@ -119,19 +119,8 @@ Cell numbers in this section are 0-based indices into **code cells**: `track-01/
 
 | Location | Defect |
 |---|---|
-| `dashboard/app.py` L54, L58–59 | `st.columns(4)` + hardcoded `TRACKS` → `IndexError` on a 5th track |
 | `tests/run_assessment.py` L9–14 | `FAST_SUBSET` hardcodes 4 notebooks |
 | `requirements-assessment-heavy.txt` L3 | `torch>=2.0.0` unbounded — contradicts Maxwell guidance |
-
-**Confirmed — silent (static inspection + manual probe, 2026-11-02):**
-
-The sweep cannot see these; it only proves the cells run. Both were found by reading
-the code, and confirmed by calling the functions directly.
-
-| Location | Defect | Failure mode |
-|---|---|---|
-| `track-01/05` cell 8 | CYK recurrence is `if B in Parse[i][k] and Parse[k+1][j]:` — membership on the left, truthiness on the right — and the rule table stores pairs `(A, B)`, so no second non-terminal is ever checked. There is no `C` in this schema; a correct recurrence needs triples | Silent false accepts on multi-symbol input: `cyk_parse(cnf_rules, ['a','a','a'])` → `True`, though the grammar generates only `"a"`. The notebook only ever calls it on `['a']`, where both calls are correct, so its output looks right |
-| `track-01/07` cell 3 | Eval loop never increments `steps`; prints `steps + 1`, so `Total steps: 1` for every path | `steps < 50` is a dead bound. Latent, not observed: the learned policy terminates, so the sweep passes in 120s |
 
 **Fixed (2026-11-02):**
 
@@ -139,6 +128,10 @@ the code, and confirmed by calling the functions directly.
 |---|---|---|
 | `tools/execution_sweep.py` | `first_error()` returned the traceback's `raise` line; every failure reported identically | Root-cause regex over the last exception header (§0.0b) |
 | `.python-version` | Absent — local 3.14 vs Docker 3.10 vs CI 3.12 | Pinned to `3.12` (A12, §0.0) |
+| `dashboard/app.py` | `st.columns(4)` + hardcoded `TRACKS` | Tracks discovered from `track-*/`; columns sized from the discovery (A1) |
+| `capstone/data/raw/faqs.json` | Uncommittable under `.gitignore` `data/` | Root-anchored to `/data/`; corpus committed, suite 19/19 (A3) |
+| `track-01/05` cell 8 | CYK tested set truthiness and stored rules as pairs, so the second non-terminal was never checked — `['a','a','a']` parsed as `True` | Recurrence over `(A, B, C)` triples; example grammar now has two true and two false cases |
+| `track-01/07` cell 3 | Eval loop never incremented `steps` — dead bound, `Total steps: 1` always | `steps += 1` in the loop; executes in 6 steps |
 
 **Refuted (measured 2026-11-02):**
 
@@ -182,6 +175,8 @@ the code, and confirmed by calling the functions directly.
 | 2026-11-02 | `pytest capstone/tests -q` after committing the corpus | 19 passed | A3 closed: the suite runs from a clean checkout |
 | 2026-11-02 | `pytest tests/ -q` after A1/A5 | 128 passed, 0 skipped | Status gate is live; dashboard discovery pinned |
 | 2026-11-02 | `tools/status_report.py` | `STATUS.md`, 7/38 notebooks with a verdict | Track 1 measured; Tracks 2–4 honestly `not measured` |
+| 2026-11-02 | `t1/05` executed after the CYK repair | `ab True, ba True, aa False, aba False` | False accepts gone; the old code returned `True` for `['a','a','a']` |
+| 2026-11-02 | `t1/07` executed after the counter fix | `Total steps: 6`, `Reached goal: True` | Dead bound replaced; previously printed `1` for every path |
 
 **The three sweep confounds:** incomplete environment (no `sklearn`, `torch`,
 `matplotlib`, `mlflow`), `QUICK_MODE=1` (skips heavy paths), and broken error
@@ -312,7 +307,7 @@ success, and CI still executes only a scoped subset.
 **Actions** — in this order:
 1. Missing data: `faqs.json` (see A3)
 2. Capstone imports: `local_provider.py`, provider `Optional`, `mock_provider` `null`
-3. Runtime bugs: `t1/02`, `t1/05`, `t1/07`, `t2/07`, `t4/05`, `t4/06`
+3. Runtime bugs: `t1/02` (unmeasured under quick mode), `t2/07`, `t4/05`, `t4/06`
 4. Stubs: `t3/04`, `t3/07`, `t3/08`, `t2/03` §4
 5. Depth: `t2/05` VAE/GAN (see Tier 1B)
 
@@ -612,3 +607,4 @@ tracks are enjoyable enough to become displacement activity. Build them *after*
 | 2026-11-02 | Merged `docs/Roadmap.md` into this file and deleted it. Kept: the Tier 0 ownership split (§4). Dropped as redundant: the paste-and-run blocks (`.python-version`, `tests/test_status_truth.py`, the patched sweep — all applied, and the embedded sweep copy was already stale) and the draft-change table, which this log supersedes. Also recorded 0.0/0.0b completion, the 7/7 Track 1 sweep, the unblocked GPU path, and the two silent Track 1 defects. |
 | 2026-11-02 | Review pass, re-verified against the tree. Removed the mixed-environment `18/38` total (§2.1) — only Track 1 is comparable, so no total is published. Rewrote §0.4 around the measured environment (CI-CPU, local GPU `2.15.0+cu132`) after it still prescribed a cu126 pin and a nonexistent sweep default. Moved `faqs.json` to measured evidence: `pytest capstone/tests` now collects 19 and fails 7, all on that file. Corrected the `t1/05` entry — the rule schema is pairs, there is no `C`, and the false accept is `['a','a','a']`, not "True either way". Resolved the §0/A5 conflict over who generates `STATUS.md`. Added a status column to §7 (A4/A8/A11/A12 done, A10 superseded). Defined `NEEDS_GPU` and marked `QUARANTINED` unimplemented in §8.5. |
 | 2026-11-02 | Tier 0 execution. A3: root-anchored `/data/` in `.gitignore` and committed `capstone/data/raw/faqs.json` (9 FAQs) — capstone suite 12/19 → 19/19. A1: dashboard derives tracks from `track-*/` and sizes its columns from the discovery; the stale Track 4 = 6 denominator corrected. A5: `tools/status_report.py` generates `STATUS.md` from the sweep report, so `tests/test_status_truth.py` runs instead of skipping. 128 tests, 0 skipped. |
+| 2026-11-02 | Repairs the measurement named: `track-01/05` CYK rewritten over `(A, B, C)` triples with a grammar that has negative cases; `track-01/07` eval loop now counts steps. Pre-commit hooks no longer run ruff on notebooks and nbstripout keeps cell ids — both were rewriting whole notebooks per commit. |
