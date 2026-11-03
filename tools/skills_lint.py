@@ -245,14 +245,37 @@ def _basenames() -> set[str]:
 
 
 def reference_ok(token: str) -> bool:
-    """A reference is live if it resolves, or if a bare name exists anywhere."""
+    """A reference is live if it resolves, or if a bare name exists anywhere.
+
+    Machine-local paths (home config, /tmp) and generated, gitignored artefacts
+    are not repo references, so they are skipped: a fresh clone must lint clean.
+    """
     target = resolve_reference(token)
+    if target is not None:
+        try:
+            target.relative_to(ROOT)
+        except ValueError:
+            return True  # outside the repo: user config, absolute system path
     if target is not None and target.exists():
+        return True
+    if target is not None and _gitignored(token):
         return True
     bare = token.rstrip("/")
     if "/" not in bare:
         return bare in _basenames()
     return False
+
+
+def _gitignored(token: str) -> bool:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(ROOT), "check-ignore", "-q", token],
+            capture_output=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0
 
 
 def extract_commands(text: str) -> list[str]:

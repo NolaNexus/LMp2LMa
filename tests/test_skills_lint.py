@@ -12,6 +12,8 @@ import sys
 import textwrap
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 LINT = ROOT / "tools" / "skills_lint.py"
 SKILLS = ROOT / ".opencode" / "skills"
@@ -142,4 +144,8 @@ def test_duplicate_descriptions_fail(tmp_path):
         ).stdout
     )
     errors = [f for f in payload["findings"] if f["code"] == "S010" and f["level"] == "error"]
+    if not errors and any(
+        f["code"] == "S010" and "not checked" in f["message"] for f in payload["findings"]
+    ):
+        pytest.skip("embedding endpoint unavailable; S010 cannot be evaluated")
     assert errors, payload["findings"]
