@@ -8,7 +8,7 @@ import streamlit as st
 
 st.set_page_config(page_title="ML Architect Journey - Progress", layout="wide")
 
-TRACKS = {
+TRACK_TITLES = {
     "track-01-ml-programmer": "Track 1: ML Programmer (Foundations)",
     "track-02-dl-programmer": "Track 2: DL Programmer (Specialization)",
     "track-03-ml-engineer": "Track 3: ML Engineer (MLOps)",
@@ -17,6 +17,35 @@ TRACKS = {
 
 CHECKPOINT_DIR = Path(__file__).parent.parent / "checkpoints"
 NOTEBOOK_DIR = Path(__file__).parent.parent
+
+
+def track_title(track_id: str) -> str:
+    """Display name for a track directory, derived when not in TRACK_TITLES."""
+    if track_id in TRACK_TITLES:
+        return TRACK_TITLES[track_id]
+    return track_id.replace("track-", "Track ").replace("-", " ").title()
+
+
+def discover_tracks() -> dict:
+    """Every `track-*` directory holds a track (A1).
+
+    Deriving the set from the filesystem means a new track appears in the
+    dashboard without editing this file, and `st.columns` can size itself.
+    """
+    dirs = sorted(p for p in NOTEBOOK_DIR.glob("track-*") if p.is_dir())
+    return {p.name: track_title(p.name) for p in dirs}
+
+
+TRACKS = discover_tracks()
+
+# Plan-level notebook counts, used only for the progress denominator. A track
+# missing from the map falls back to what is on disk, so it cannot KeyError.
+EXPECTED_NOTEBOOKS = {
+    "track-01-ml-programmer": 7,
+    "track-02-dl-programmer": 11,
+    "track-03-ml-engineer": 8,
+    "track-04-ml-architect": 12,
+}
 
 
 @st.cache_data
@@ -56,7 +85,7 @@ def main():
 def show_overview():
     st.header("📈 Journey Overview")
 
-    cols = st.columns(4)
+    cols = st.columns(max(len(TRACKS), 1))
     total_notebooks = 0
     total_checkpoints = 0
 
@@ -80,14 +109,7 @@ def show_overview():
         cp_data = load_checkpoints(track_id)
         cp_count = len(cp_data.get("checkpoints", []))
 
-        # Expected from plan
-        expected = {
-            "track-01-ml-programmer": 7,
-            "track-02-dl-programmer": 11,
-            "track-03-ml-engineer": 8,
-            "track-04-ml-architect": 6,
-        }
-        exp = expected.get(track_id, 0)
+        exp = EXPECTED_NOTEBOOKS.get(track_id, nb_count)
         pct = min(nb_count / exp * 100, 100) if exp > 0 else 0
 
         st.progress(pct / 100, text=f"{track_name}: {nb_count}/{exp} notebooks ({pct:.0f}%)")
