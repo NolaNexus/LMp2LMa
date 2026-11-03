@@ -19,8 +19,8 @@
 ## Quick Start
 
 ### Zero-Setup (Browser)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USER/LMp2LMa)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/YOUR_USER/LMp2LMa)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NolaNexus/LMp2LMa/blob/master/)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/NolaNexus/LMp2LMa?devcontainer_path=.devcontainer/devcontainer.json)
 
 ### Local (CPU)
 ```bash
@@ -136,7 +136,7 @@ pytest tests/ -v
 - **`checkpoints/`**: Skill checkpoints per track (JSON, auto-graded)
 - **`dashboard/`**: Streamlit progress tracking dashboard
 - **`requirements*.txt`**: CPU/GPU/CI variants with lock files
-- **`Dockerfile`**: Multi-stage dev environments
+- **`.devcontainer/Dockerfile`**: single multi-stage dev image (dev / gpu-dev) used by both Codespaces and `docker compose`
 - **`BADGES.md`**: Colab/Kaggle/Codespaces badge templates
 
 ---

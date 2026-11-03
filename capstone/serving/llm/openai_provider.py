@@ -1,16 +1,24 @@
 """
 OpenAI Provider Implementation
 """
+
 import os
 import time
-from typing import List, Dict, Any, AsyncIterator
+from typing import AsyncIterator, List, Optional
+
 from capstone.serving.llm.providers import (
-    LLMProvider, ProviderType, LLMRequest, LLMResponse,
-    EmbeddingRequest, EmbeddingResponse, registry
+    EmbeddingRequest,
+    EmbeddingResponse,
+    LLMProvider,
+    LLMRequest,
+    LLMResponse,
+    ProviderType,
+    registry,
 )
 
 try:
     import openai
+
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
@@ -28,9 +36,15 @@ class OpenAIProvider(LLMProvider):
 
         self.client = openai.AsyncOpenAI(api_key=self.api_key, organization=organization)
         self._models = [
-            "gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4",
-            "gpt-3.5-turbo", "gpt-3.5-turbo-16k",
-            "text-embedding-3-large", "text-embedding-3-small", "text-embedding-ada-002"
+            "gpt-4o",
+            "gpt-4o-mini",
+            "gpt-4-turbo",
+            "gpt-4",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-16k",
+            "text-embedding-3-large",
+            "text-embedding-3-small",
+            "text-embedding-ada-002",
         ]
 
     @property
@@ -71,7 +85,7 @@ class OpenAIProvider(LLMProvider):
             tokens_used=response.usage.total_tokens if response.usage else 0,
             latency_ms=latency_ms,
             finish_reason=choice.finish_reason or "stop",
-            metadata={"prompt_tokens": response.usage.prompt_tokens if response.usage else 0}
+            metadata={"prompt_tokens": response.usage.prompt_tokens if response.usage else 0},
         )
 
     async def generate_stream(self, request: LLMRequest) -> AsyncIterator[str]:
@@ -109,7 +123,7 @@ class OpenAIProvider(LLMProvider):
             provider=ProviderType.OPENAI,
             model=model,
             tokens_used=response.usage.total_tokens if response.usage else 0,
-            latency_ms=latency_ms
+            latency_ms=latency_ms,
         )
 
     async def health_check(self) -> bool:

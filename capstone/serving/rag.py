@@ -4,6 +4,7 @@ Uses TF-IDF + cosine similarity so the pipeline runs offline with no model
 downloads. Swap `FaqRetriever` for an embedding-backed implementation without
 changing the API surface.
 """
+
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -34,7 +35,9 @@ class FaqRetriever:
         self.vectorizer = TfidfVectorizer(stop_words="english", ngram_range=(1, 2))
         self.matrix = self.vectorizer.fit_transform(corpus)
 
-    def retrieve(self, query: str, top_k: int = 3, min_score: float = 0.05) -> List[RetrievedDocument]:
+    def retrieve(
+        self, query: str, top_k: int = 3, min_score: float = 0.05
+    ) -> List[RetrievedDocument]:
         query_vec = self.vectorizer.transform([query])
         scores = cosine_similarity(query_vec, self.matrix).ravel()
         ranked = np.argsort(scores)[::-1][:top_k]
@@ -63,7 +66,9 @@ class FaqRetriever:
         return "\n\n".join(blocks), [doc.id for doc in retrieved]
 
 
-def answer_with_retrieval(query: str, retriever: FaqRetriever, top_k: int = 3) -> tuple[str, List[str]]:
+def answer_with_retrieval(
+    query: str, retriever: FaqRetriever, top_k: int = 3
+) -> tuple[str, List[str]]:
     """Deterministic fallback answer built directly from retrieved FAQs."""
     retrieved = retriever.retrieve(query, top_k=top_k)
     if not retrieved:

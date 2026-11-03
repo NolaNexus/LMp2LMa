@@ -1,0 +1,17 @@
+{
+  "model": {
+    "type": "tfidf_logreg",
+    "tfidf_max_features": 500,
+    "logreg_C": 1.0
+  },
+  "data": {
+    "corpus_path": "capstone/data/raw/faqs.json"
+  },
+  "mlflow": {
+    "experiment": "capstone-faq-intent",
+    "tracking_uri": null
+  },
+  "output": {
+    "last_run_path": "capstone/training/last_run.json"
+  }
+}

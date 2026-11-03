@@ -7,6 +7,7 @@ Defaults to the deterministic mock provider so the service works offline. Set
 LLM_PROVIDER=openai|anthropic|local to use a real provider (requires its SDK and
 credentials).
 """
+
 import os
 import time
 from typing import List, Optional
@@ -127,7 +128,11 @@ async def classify(request: ClassifyRequest):
         hits = sum(1 for kw in keywords if kw in text)
         if hits:
             confidence = min(0.95, 0.55 + 0.15 * hits)
-            priority = "high" if any(w in text for w in ("urgent", "outage", "down", "critical")) else "medium"
+            priority = (
+                "high"
+                if any(w in text for w in ("urgent", "outage", "down", "critical"))
+                else "medium"
+            )
             return ClassifyResponse(
                 category=category,
                 priority=priority,

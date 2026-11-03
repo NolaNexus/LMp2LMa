@@ -1,16 +1,24 @@
 """
 Anthropic Provider Implementation
 """
+
 import os
 import time
-from typing import List, Dict, Any, AsyncIterator
+from typing import AsyncIterator, List, Optional
+
 from capstone.serving.llm.providers import (
-    LLMProvider, ProviderType, LLMRequest, LLMResponse,
-    EmbeddingRequest, EmbeddingResponse, registry
+    EmbeddingRequest,
+    EmbeddingResponse,
+    LLMProvider,
+    LLMRequest,
+    LLMResponse,
+    ProviderType,
+    registry,
 )
 
 try:
     import anthropic
+
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
@@ -76,8 +84,8 @@ class AnthropicProvider(LLMProvider):
             finish_reason=response.stop_reason or "stop",
             metadata={
                 "input_tokens": response.usage.input_tokens,
-                "output_tokens": response.usage.output_tokens
-            }
+                "output_tokens": response.usage.output_tokens,
+            },
         )
 
     async def generate_stream(self, request: LLMRequest) -> AsyncIterator[str]:
@@ -105,7 +113,7 @@ class AnthropicProvider(LLMProvider):
             provider=ProviderType.ANTHROPIC,
             model="none",
             tokens_used=0,
-            latency_ms=0
+            latency_ms=0,
         )
 
     async def health_check(self) -> bool:
@@ -114,7 +122,7 @@ class AnthropicProvider(LLMProvider):
             await self.client.messages.create(
                 model=self.default_model,
                 messages=[{"role": "user", "content": "test"}],
-                max_tokens=1
+                max_tokens=1,
             )
             return True
         except Exception:

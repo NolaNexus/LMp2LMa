@@ -1,4 +1,5 @@
 """Tests for the checkpoint grader using small fixture notebooks."""
+
 import json
 import sys
 from pathlib import Path
@@ -15,7 +16,9 @@ def _write_notebook(path: Path, outputs: list[str] | None):
     cell = nbformat.v4.new_code_cell("print('result')")
     cell.execution_count = 1
     if outputs:
-        cell.outputs = [nbformat.v4.new_output("stream", name="stdout", text=text) for text in outputs]
+        cell.outputs = [
+            nbformat.v4.new_output("stream", name="stdout", text=text) for text in outputs
+        ]
     nb.cells.append(cell)
     nbformat.write(nb, str(path))
 
@@ -38,7 +41,12 @@ def graded_track(tmp_path):
                 "questions": [
                     {"id": "q1", "type": "code_output", "prompt": "true?", "expected": "True"},
                     {"id": "q2", "type": "metric", "prompt": "accuracy", "expected": "> 0.8"},
-                    {"id": "q3", "type": "concept", "prompt": "why", "expected": "schema validation profiling"},
+                    {
+                        "id": "q3",
+                        "type": "concept",
+                        "prompt": "why",
+                        "expected": "schema validation profiling",
+                    },
                 ],
             }
         ],
@@ -69,9 +77,7 @@ def test_all_questions_pass(graded_track):
 
 
 def test_metric_threshold_fails(graded_track):
-    result = graded_track(
-        ["True\n", "accuracy = 0.55\n", "schema validation and profiling\n"]
-    )
+    result = graded_track(["True\n", "accuracy = 0.55\n", "schema validation and profiling\n"])
     assert result["status"] == "FAIL"
     assert result["total_score"] == 2
 
